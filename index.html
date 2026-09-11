@@ -190,13 +190,13 @@ body.window #win{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-event
 #winNav .pos{color:var(--faint);font-variant-numeric:tabular-nums}
 
 #veil{
-  position:fixed;inset:0;z-index:15;background:rgba(0,1,4,.55);
+  position:fixed;left:0;right:0;top:0;height:var(--vvh,100%);z-index:15;background:rgba(0,1,4,.55);
   opacity:0;pointer-events:none;transition:opacity .38s ease
 }
 body.window #veil{opacity:1;pointer-events:auto}
 
 /* ---------- the television, opened fullscreen ---------- */
-#tvwrap{position:fixed;inset:0;z-index:30;pointer-events:none;opacity:0;transition:opacity .32s ease}
+#tvwrap{position:fixed;left:0;right:0;top:0;height:var(--vvh,100%);z-index:30;pointer-events:none;opacity:0;transition:opacity .32s ease}
 body.tv #tvwrap{pointer-events:auto;opacity:1}
 #tvbox{
   position:absolute;inset:0;display:flex;flex-direction:column;
@@ -301,7 +301,12 @@ body.tvembed #tvctl{display:none}
 
 /* ---------- the corner: language and contact ---------- */
 #corner{
-  position:fixed;bottom:26px;right:26px;z-index:6;display:flex;align-items:center;gap:10px
+  position:fixed;left:0;right:0;top:0;height:var(--vvh,100%);
+  z-index:6;pointer-events:none
+}
+#cornerIn{
+  position:absolute;right:26px;bottom:26px;
+  display:flex;align-items:center;gap:10px;pointer-events:auto
 }
 #langwrap{position:relative}
 #langbtn{
@@ -332,7 +337,7 @@ body.tvembed #tvctl{display:none}
 @media (max-width:620px){
   #crumb{top:18px;left:16px;font-size:9px;letter-spacing:.14em;gap:8px}
   #crumb .trail{display:none}
-  #corner{bottom:16px;right:14px;gap:8px}
+  #cornerIn{right:14px;bottom:16px;gap:8px}
   #say{padding:9px 13px;font-size:9px;letter-spacing:.16em}
   #langbtn{padding:8px 11px 8px 10px;font-size:9px}
   #title{top:22px}
@@ -381,7 +386,7 @@ body.tvembed #tvctl{display:none}
   <button id="back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
   <span class="trail"><span class="sep">/</span> <span class="cur"></span></span>
 </div>
-<div id="corner">
+<div id="corner"><div id="cornerIn">
   <div id="langwrap">
     <button id="langbtn" aria-haspopup="true" aria-expanded="false" aria-label="Language">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
@@ -390,7 +395,7 @@ body.tvembed #tvctl{display:none}
     <div id="langmenu" role="menu" hidden></div>
   </div>
   <a id="say" href="https://wa.me/4915121968192" target="_blank" rel="noopener">Say hello</a>
-</div>
+</div></div>
 
 <div id="veil"></div>
 
@@ -1572,6 +1577,7 @@ function countOf(id){
 
 /* ---------------- layout ---------------- */
 let fitDist = 700;
+let bandHalf = 0;          // half the height of the free space between header and buttons
 
 function layoutRoot(list){
   const n = list.length;
@@ -1606,7 +1612,8 @@ function layoutRoot(list){
     // On a phone an even grid reads as a grid. Every folder sits at the SAME
     // depth, so they are all the same size and every label lands on the same
     // line — the tilt is what keeps them three-dimensional, not the distance.
-    const cols = 2, cw = 168, ch = 196;
+    const short = H < 660;
+    const cols = 2, cw = 176, ch = short ? 212 : 246;
     list.forEach((o,i)=>{
       const row = Math.floor(i/cols), col = i%cols;
       const rowCount = Math.min(cols, n - row*cols);
@@ -1615,9 +1622,12 @@ function layoutRoot(list){
     });
   }
   // cap how large a folder may get, so a level with only two of them stays calm
-  const fhw = W>=860 ? 106 : 60;
-  const maxPx = W>=860 ? 300 : W*0.40;
-  fitDist = fitFor(list, W>=860 ? 122 : 74, W>=860 ? 184 : 172, 2*fhw*FOCAL/maxPx);
+  const fhw = W>=860 ? 106 : 62;
+  const maxPx = W>=860 ? 300 : W*0.44;
+  // the second number is the vertical half-extent of one cell INCLUDING its
+  // label, so the outer rows never get pushed off the screen
+  const labelAllow = W>=860 ? 184 : (H < 660 ? 102 : 132);
+  fitDist = fitFor(list, W>=860 ? 122 : 78, labelAllow, 2*fhw*FOCAL/maxPx);
 }
 
 function layoutSheets(list){
@@ -1644,7 +1654,7 @@ function layoutSheets(list){
 function fitFor(list, hw, hh, minDist){
   let d = Math.max(380, minDist || 380);
   const mx = W*0.455;
-  const my = Math.max(H*0.22, Math.min(CY, H-CY) - (W<860 ? 34 : 44));
+  const my = Math.max(60, (bandHalf || H*0.40) - (W<860 ? 10 : 26));
   for (let pass=0; pass<60; pass++){
     let ok = true;
     for (const o of list){
@@ -2210,7 +2220,14 @@ cv.addEventListener('wheel', e=>{
 
 /* ---------------- resize ---------------- */
 function resize(){
-  W = innerWidth; H = innerHeight;
+  // innerHeight on iOS Safari reports the layout viewport, which is TALLER than
+  // what you can see — the address bar and toolbar sit on top of it. Everything
+  // then gets centred against a screen that is ~100px bigger than reality, which
+  // is why the folders sat too low with a hole above them. visualViewport is the
+  // part actually on screen.
+  W = innerWidth;
+  H = Math.round((window.visualViewport && window.visualViewport.height) || innerHeight);
+  document.documentElement.style.setProperty('--vvh', H + 'px');
   // render at the screen's real density — a phone is 3x, and drawing at 2x and
   // letting the browser upscale is exactly what made the lines look soft.
   // capped by total pixels, not by ratio, so a big tablet cannot melt.
@@ -2225,11 +2242,13 @@ function resize(){
   // buttons, instead of nudging the whole scene down by a guessed fraction
   if (state === 'root'){
     const t = document.getElementById('title');
-    const top = t ? Math.min(H*0.42, t.getBoundingClientRect().bottom + (W<860 ? 18 : 26)) : H*0.22;
-    const bot = H - (W<860 ? 74 : 86);
+    const top = t ? Math.min(H*0.40, t.getBoundingClientRect().bottom + (W<860 ? 14 : 26)) : H*0.20;
+    const bot = H - (W<860 ? 78 : 86);
     CY = (top + bot)/2;
+    bandHalf = (bot - top)/2;
   } else {
     CY = H/2;
+    bandHalf = H*0.40;
   }
   FOCAL = Math.max(520, Math.min(W,H)*1.12);
   if (visible.length && visible[0].kind === 'folder') layoutRoot(visible);
@@ -2237,6 +2256,11 @@ function resize(){
   cam.gdist = fitDist;
 }
 addEventListener('resize', resize);
+addEventListener('orientationchange', ()=> setTimeout(resize, 120));
+if (window.visualViewport){
+  visualViewport.addEventListener('resize', resize);
+  visualViewport.addEventListener('scroll', resize);   // iOS shrinks it as you scroll
+}
 
 /* ---------------- api ---------------- */
 const API = {
