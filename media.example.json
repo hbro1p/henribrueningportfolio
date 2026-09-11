@@ -1,0 +1,17 @@
+{
+  "_comment": "Copy the bits you need into media.json. This file is only an example and is not read by the site.",
+
+  "photos": [
+    { "file": "img/photo-01.jpg", "caption": "SAHARA", "where": "Egypt · October 2025" },
+    { "file": "img/photo-02.jpg", "caption": "NIGHT BUS", "where": "Paris · January 2025" },
+    { "file": "img/photo-03.jpg", "caption": "ALBANIAN RIDGE", "where": "Albania · June 2025",
+      "text": "Shot on the Canon F-1, Portra 400. Two weeks of mountains and no shared language." }
+  ],
+
+  "videos": [
+    { "file": "video/reel-01.mp4", "poster": "video/reel-01.jpg",
+      "title": "New build tour", "who": "KELWIN LAMPARTER" },
+    { "file": "video/reel-02.mp4", "poster": "video/reel-02.jpg",
+      "title": "Flea market day", "who": "COESFELD FLOHMARKT" }
+  ]
+}

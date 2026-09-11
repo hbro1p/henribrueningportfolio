@@ -1,0 +1,2719 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Henri Bruening - portfolio. Video, media, web and projects from Coesfeld.">
+<meta name="theme-color" content="#000206">
+<meta property="og:title" content="Henri Bruening - Portfolio">
+<meta property="og:description" content="Video, media, web and projects.">
+<meta property="og:type" content="website">
+<title>Henri Brüning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#000206;
+  --ink:#ffffff;
+  --dim:#9aa2ad;
+  --faint:#5a626d;
+  --line:rgba(255,255,255,.16);
+  --hair:rgba(255,255,255,.08);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Archivo','Helvetica Neue',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);overflow:hidden;overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0}
+a{color:inherit}
+:focus-visible{outline:1px solid #fff;outline-offset:3px}
+
+#sky{position:fixed;inset:0;display:block;touch-action:none;cursor:grab}
+#sky.drag{cursor:grabbing}
+#sky.point{cursor:pointer}
+
+/* ---------- title, only on the root level ---------- */
+#title{
+  position:fixed;left:0;right:0;top:clamp(34px,7vh,72px);z-index:5;
+  text-align:center;pointer-events:none;padding-inline:20px;
+  transition:opacity .5s ease, transform .5s ease;
+}
+body.deep #title{opacity:0;transform:translateY(-12px)}
+#title h1{
+  font-family:var(--sans);font-weight:700;font-size:clamp(20px,2.5vw,30px);
+  letter-spacing:.12em;margin:0;line-height:1.2;
+}
+#title .pf{
+  font-family:var(--sans);font-weight:700;font-size:clamp(12px,1.5vw,18px);
+  letter-spacing:.34em;margin-top:10px;color:#fff;line-height:1.2;
+}
+#social{
+  display:flex;justify-content:center;gap:clamp(16px,2vw,24px);margin-top:20px;
+  pointer-events:auto;
+}
+#social a{
+  display:grid;place-items:center;width:34px;height:34px;color:#fff;opacity:.72;
+  transition:opacity .2s, transform .2s;
+}
+#social a:hover{opacity:1;transform:translateY(-2px)}
+#social svg{
+  width:21px;height:21px;stroke:currentColor;fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* ---------- breadcrumb + back ---------- */
+#crumb{
+  position:fixed;top:26px;left:26px;z-index:6;display:flex;align-items:center;gap:11px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  opacity:0;transform:translateX(-8px);transition:opacity .4s ease, transform .4s ease;
+  pointer-events:none;
+}
+body.deep #crumb{opacity:1;transform:none;pointer-events:auto}
+#crumb button{color:var(--dim);letter-spacing:.2em;transition:color .2s}
+#crumb button:hover{color:#fff}
+#crumb .sep{color:var(--faint)}
+#crumb .cur{color:#fff;display:inline-flex;align-items:center;gap:11px}
+#crumb .cur button{color:var(--dim)}
+#crumb .cur button:hover{color:#fff}
+#back{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:99px;
+  padding:8px 14px 8px 11px;color:var(--dim);transition:.2s
+}
+#back:hover{border-color:#fff;color:#fff}
+#back svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- persistent contact ---------- */
+#say{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:99px;padding:10px 17px;color:var(--dim);
+  text-decoration:none;transition:.2s;background:rgba(0,2,6,.5);backdrop-filter:blur(8px)
+}
+#say:hover{border-color:#fff;color:#fff}
+
+
+/* ---------- the window that opens in space ---------- */
+#win:focus{outline:none}
+#win{
+  position:fixed;z-index:20;left:50%;top:50%;
+  width:min(680px,92vw);max-height:min(82vh,820px);
+  transform:translate(-50%,-50%) scale(.94);opacity:0;pointer-events:none;
+  transition:opacity .38s ease, transform .38s cubic-bezier(.16,1,.3,1);
+  display:flex;flex-direction:column;
+  background:rgba(2,4,9,.93);backdrop-filter:blur(20px);
+  border:1px solid var(--line);border-radius:3px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 40px 120px -30px rgba(0,0,0,.95);
+}
+body.window #win{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+#winBar{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  border-bottom:1px solid var(--hair);flex:none
+}
+#winBar .dots{display:flex;gap:6px;flex:none}
+#winBar .dots i{width:8px;height:8px;border-radius:50%;border:1px solid var(--line);display:block}
+#winBar .dots i:first-child{border-color:var(--accent,rgba(255,255,255,.16))}
+#winName{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--faint);
+  text-transform:uppercase;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+#winClose{width:22px;height:22px;display:grid;place-items:center;color:var(--faint);flex:none;transition:color .2s}
+#winClose:hover{color:#fff}
+#winClose svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+#winBody{
+  overflow-y:auto;padding:30px 34px 38px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent
+}
+#winBody::-webkit-scrollbar{width:5px}
+#winBody::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18)}
+
+#winBody .shot{margin:0 0 26px;border:1px solid var(--hair);background:#04070d;line-height:0}
+#winBody .shot img{width:100%;height:auto;display:block;max-width:100%}
+#winBody h2{
+  font-family:var(--sans);font-weight:700;font-size:clamp(21px,2.6vw,27px);
+  letter-spacing:-.015em;margin:0;line-height:1.14;text-wrap:balance
+}
+#winBody .role{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--dim);
+  margin-top:11px;line-height:1.65
+}
+#winBody .big{
+  margin-top:26px;padding-top:22px;border-top:1px solid var(--hair);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap
+}
+#winBody .big b{font-family:var(--sans);font-weight:700;font-size:clamp(28px,3.6vw,40px);
+  letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:var(--accent,#fff)}
+#winBody .big span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+  color:var(--faint);text-transform:uppercase;line-height:1.6;max-width:26ch}
+#winBody p{font-size:15px;line-height:1.75;color:#cbd2dc;margin:22px 0 0;max-width:62ch}
+#winBody h3{
+  font-family:var(--mono);font-size:9px;letter-spacing:.28em;color:var(--faint);
+  text-transform:uppercase;margin:34px 0 14px;font-weight:400
+}
+#winBody ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+#winBody li{
+  font-size:14px;line-height:1.6;color:#cbd2dc;padding-left:20px;position:relative;max-width:62ch
+}
+#winBody li::before{
+  content:'';position:absolute;left:2px;top:.62em;width:7px;height:1px;background:var(--accent,#9aa2ad);opacity:.75
+}
+#winBody blockquote{
+  margin:30px 0 0;padding:0 0 0 18px;border-left:1px solid var(--line)
+}
+#winBody blockquote .t{font-size:15px;line-height:1.66;font-style:italic;color:#e3e8ef}
+#winBody blockquote .a{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--faint);margin-top:10px}
+#winBody .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:30px}
+#winBody .tags span{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--faint);
+  border:1px solid var(--hair);padding:4px 8px
+}
+#winBody .links{display:flex;flex-direction:column;margin-top:16px;border-top:1px solid var(--hair)}
+#winBody .links a{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 2px;border-bottom:1px solid var(--hair);text-decoration:none;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:#cbd2dc;transition:color .2s,padding-left .2s
+}
+#winBody .links a:hover{color:var(--accent,#fff);padding-left:8px}
+#winBody .links svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;opacity:.5;flex:none}
+
+#winNav{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 14px;border-top:1px solid var(--hair);flex:none;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase
+}
+#winNav button{color:var(--faint);transition:color .2s;padding:4px 0}
+#winNav button:hover{color:#fff}
+#winNav .pos{color:var(--faint);font-variant-numeric:tabular-nums}
+
+#veil{
+  position:fixed;inset:0;z-index:15;background:rgba(0,1,4,.55);
+  opacity:0;pointer-events:none;transition:opacity .38s ease
+}
+body.window #veil{opacity:1;pointer-events:auto}
+
+/* ---------- the television, opened fullscreen ---------- */
+#tvwrap{position:fixed;inset:0;z-index:30;pointer-events:none;opacity:0;transition:opacity .32s ease}
+body.tv #tvwrap{pointer-events:auto;opacity:1}
+#tvbox{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:#000206;transform:scale(1.03);transition:transform .38s cubic-bezier(.16,1,.3,1);
+  padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)
+}
+body.tv #tvbox{transform:none}
+#tvbox:focus{outline:none}
+
+#tvtop{
+  flex:none;display:flex;align-items:center;gap:14px;padding:12px 16px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)
+}
+#tvclose{width:38px;height:38px;margin-left:-9px;display:grid;place-items:center;color:var(--dim);flex:none;transition:color .2s}
+#tvclose:hover{color:#fff}
+#tvclose svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round}
+#tvname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
+#tvcount{flex:none;font-variant-numeric:tabular-nums}
+
+#tvstage{
+  flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;touch-action:pan-y
+}
+#tvscreen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#tvscreen video{max-width:100%;max-height:100%;width:auto;height:100%;display:block;background:#000206;object-fit:contain}
+#tvscreen iframe{height:100%;width:auto;aspect-ratio:.62;max-width:100%;border:0;display:block;background:#04070d}
+/* the whole picture is the play/pause target on a phone */
+#tvtap{position:absolute;inset:0;background:none;cursor:pointer}
+body.tvembed #tvtap{display:none}
+
+#tvbig{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.88);
+  width:76px;height:76px;border-radius:50%;display:grid;place-items:center;pointer-events:none;
+  background:rgba(0,2,6,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.22);
+  opacity:0;transition:opacity .25s ease, transform .25s ease
+}
+body.tvpaused #tvbig{opacity:1;transform:translate(-50%,-50%) scale(1)}
+body.tvembed #tvbig{display:none}
+#tvbig svg{width:30px;height:30px;fill:#fff;stroke:none;margin-left:3px}
+
+#tvnote{
+  position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;text-align:center;padding:28px;background:#04070d
+}
+body.tvblocked #tvnote{display:flex}
+#tvnote p{font-size:14px;line-height:1.65;color:var(--dim);margin:0;max-width:32ch}
+#tvopen{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:99px;padding:12px 20px;color:#fff;text-decoration:none;transition:.2s
+}
+#tvopen:hover{border-color:#3D8BFF;color:#3D8BFF}
+
+.tvedge{
+  position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
+  display:grid;place-items:center;color:#fff;opacity:0;transition:opacity .25s ease, background .2s;
+  background:rgba(0,2,6,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16)
+}
+#tvedgePrev{left:14px} #tvedgeNext{right:14px}
+body.tvui .tvedge{opacity:.85}
+.tvedge:hover{background:rgba(0,2,6,.85);opacity:1}
+.tvedge svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:none){ .tvedge{display:none} }
+
+#tvctl{
+  flex:none;padding:10px 16px calc(16px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:2px;
+  opacity:0;transform:translateY(8px);transition:opacity .25s ease, transform .25s ease
+}
+body.tvui #tvctl{opacity:1;transform:none}
+body.tvembed #tvctl{display:none}
+
+#tvline{padding:14px 0 6px;cursor:pointer;touch-action:none}
+#tvtrack{position:relative;height:3px;border-radius:2px;background:rgba(255,255,255,.16)}
+#tvbuf{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.22);border-radius:2px}
+#tvfill{position:absolute;left:0;top:0;bottom:0;width:0;background:#3D8BFF;border-radius:2px}
+#tvknob{
+  position:absolute;top:50%;left:0;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;
+  background:#fff;transform:translateY(-50%) scale(.85);transition:transform .16s ease;display:block
+}
+#tvline:hover #tvknob, #tvline.drag #tvknob{transform:translateY(-50%) scale(1.15)}
+
+#tvtimes{
+  display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--faint);font-variant-numeric:tabular-nums
+}
+#tvbtns{display:flex;align-items:center;justify-content:center;gap:clamp(10px,4vw,28px);margin-top:8px}
+#tvbtns button{
+  position:relative;width:48px;height:48px;display:grid;place-items:center;color:var(--dim);
+  border-radius:50%;transition:color .2s, background .2s
+}
+#tvbtns button:hover{color:#fff;background:rgba(255,255,255,.07)}
+#tvbtns svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* the UA [hidden] rule does not reach SVG elements — say it explicitly */
+#tvbtns svg[hidden]{display:none}
+#tvbtns svg .fill{fill:currentColor;stroke:none}
+#tvPlay{color:#fff}
+#tvPlay svg{width:28px;height:28px}
+#tvBack10 b, #tvFwd10 b{
+  position:absolute;left:0;right:0;top:53%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:0;text-align:center;pointer-events:none
+}
+
+/* ---------- the corner: language and contact ---------- */
+#corner{
+  position:fixed;bottom:26px;right:26px;z-index:6;display:flex;align-items:center;gap:10px
+}
+#langwrap{position:relative}
+#langbtn{
+  display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:99px;
+  padding:9px 13px 9px 11px;color:var(--dim);transition:.2s;
+  background:rgba(0,2,6,.5);backdrop-filter:blur(8px);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em
+}
+#langbtn:hover,#langbtn[aria-expanded="true"]{border-color:#fff;color:#fff}
+#langbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;flex:none}
+#langmenu{
+  position:absolute;bottom:calc(100% + 8px);right:0;min-width:150px;
+  background:rgba(2,4,9,.96);backdrop-filter:blur(18px);
+  border:1px solid var(--line);border-radius:3px;overflow:hidden;
+  box-shadow:0 20px 50px -20px rgba(0,0,0,.95)
+}
+#langmenu button{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 14px;
+  color:var(--dim);transition:background .2s,color .2s;font-size:13px
+}
+#langmenu button:hover{background:rgba(255,255,255,.06);color:#fff}
+#langmenu button[aria-current="true"]{color:#fff}
+#langmenu button span.k{
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--faint);flex:none;width:20px
+}
+#langmenu button[aria-current="true"] span.k{color:#3D8BFF}
+
+@media (max-width:620px){
+  #crumb{top:18px;left:16px;font-size:9px;letter-spacing:.14em;gap:8px}
+  #crumb .trail{display:none}
+  #corner{bottom:16px;right:14px;gap:8px}
+  #say{padding:9px 13px;font-size:9px;letter-spacing:.16em}
+  #langbtn{padding:8px 11px 8px 10px;font-size:9px}
+  #title{top:22px}
+  #title h1{font-size:20px;letter-spacing:.1em}
+  #title .pf{font-size:11px;letter-spacing:.3em;margin-top:8px}
+  #social{margin-top:14px;gap:14px}
+  #social a{width:30px;height:30px}
+  #social svg{width:19px;height:19px}
+  #win{width:94vw;max-height:86vh}
+  #winBody{padding:22px 20px 30px}
+  #winBody p,#winBody li{font-size:14px}
+  #tvtop{padding:10px 12px}
+  #tvctl{padding:6px 14px calc(12px + env(safe-area-inset-bottom))}
+  #tvbtns{gap:clamp(6px,3.5vw,20px);margin-top:4px}
+  #tvbtns button{width:44px;height:44px}
+  #tvbig{width:64px;height:64px}
+  #tvbig svg{width:26px;height:26px}
+}
+@media (prefers-reduced-motion:reduce){
+  #win,#title,#crumb,#veil{transition-duration:.01ms}
+}
+</style>
+
+<style>*{box-sizing:border-box}html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<div id="title">
+  <h1>HENRI BRÜNING</h1>
+  <div class="pf">PORTFOLIO</div>
+  <nav id="social">
+    <a href="https://www.instagram.com/henribruening/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.4"/><circle cx="12" cy="12" r="4.6"/><circle cx="17.6" cy="6.4" r="1.25" fill="currentColor" stroke="none"/></svg>
+    </a>
+    <a href="https://www.linkedin.com/in/henribruening/" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="2.6"/><path d="M7.1 10.2v7.1M7.1 7.0v.05"/><path d="M11.3 17.3v-7.1M11.3 13.1c0-1.6.9-2.6 2.4-2.6s2.5 1 2.5 2.7v4.1"/></svg>
+    </a>
+    <a href="https://wa.me/4915121968192" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M20.3 11.7a8.3 8.3 0 0 1-12.2 7.3L3.6 20.4l1.4-4.4A8.3 8.3 0 1 1 20.3 11.7z"/><path d="M9.2 8.4c.3-.1.6 0 .8.3l.8 1.3c.1.2.1.5 0 .7l-.5.7c-.1.2-.1.4 0 .6a6 6 0 0 0 2.4 2.4c.2.1.4.1.6 0l.7-.5c.2-.1.5-.2.7 0l1.3.8c.3.2.4.5.3.8-.3.9-1.2 1.4-2.1 1.2a8.4 8.4 0 0 1-6.2-6.2c-.2-.9.3-1.8 1.2-2.1z"/></svg>
+    </a>
+  </nav>
+</div>
+
+<div id="crumb">
+  <button id="back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
+  <span class="trail"><span class="sep">/</span> <span class="cur"></span></span>
+</div>
+<div id="corner">
+  <div id="langwrap">
+    <button id="langbtn" aria-haspopup="true" aria-expanded="false" aria-label="Language">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+      <span id="langnow">EN</span>
+    </button>
+    <div id="langmenu" role="menu" hidden></div>
+  </div>
+  <a id="say" href="https://wa.me/4915121968192" target="_blank" rel="noopener">Say hello</a>
+</div>
+
+<div id="veil"></div>
+
+<div id="tvwrap" aria-hidden="true">
+  <section id="tvbox" role="dialog" aria-modal="true" tabindex="-1">
+
+    <header id="tvtop">
+      <button id="tvclose" aria-label="Close">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <span id="tvname"></span>
+      <span id="tvcount"></span>
+    </header>
+
+    <div id="tvstage">
+      <div id="tvscreen"></div>
+      <button id="tvtap" aria-label="Play"></button>
+      <div id="tvbig"><svg viewBox="0 0 24 24"><path d="M8 5.5l11 6.5-11 6.5z"/></svg></div>
+      <div id="tvnote">
+        <p id="tvnoteText"></p>
+        <a id="tvopen" href="#" target="_blank" rel="noopener"></a>
+      </div>
+      <button class="tvedge" id="tvedgePrev" aria-label="Previous video">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <button class="tvedge" id="tvedgeNext" aria-label="Next video">
+        <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <footer id="tvctl">
+      <div id="tvline">
+        <div id="tvtrack"><div id="tvbuf"></div><div id="tvfill"></div><i id="tvknob"></i></div>
+      </div>
+      <div id="tvtimes"><span id="tvcur">0:00</span><span id="tvdur">0:00</span></div>
+      <div id="tvbtns">
+        <button id="tvPrev" aria-label="Previous video">
+          <svg viewBox="0 0 24 24"><path d="M18 5.5v13L8.5 12zM6 5.5v13"/></svg>
+        </button>
+        <button id="tvBack10" aria-label="Back 10 seconds">
+          <svg viewBox="0 0 24 24"><path d="M11.5 5.5A7 7 0 1 1 5 12"/><path d="M11.5 2.6L11.5 8.4L6.6 5.5z" class="fill"/></svg>
+          <b>10</b>
+        </button>
+        <button id="tvPlay" aria-label="Play">
+          <svg id="tvIconPlay" viewBox="0 0 24 24"><path d="M7 4.5l13 7.5-13 7.5z" class="fill"/></svg>
+          <svg id="tvIconPause" viewBox="0 0 24 24" hidden><path d="M8 4.5v15M16 4.5v15"/></svg>
+        </button>
+        <button id="tvFwd10" aria-label="Forward 10 seconds">
+          <svg viewBox="0 0 24 24"><path d="M12.5 5.5A7 7 0 1 0 19 12"/><path d="M12.5 2.6L12.5 8.4L17.4 5.5z" class="fill"/></svg>
+          <b>10</b>
+        </button>
+        <button id="tvNext" aria-label="Next video">
+          <svg viewBox="0 0 24 24"><path d="M6 5.5v13L15.5 12zM18 5.5v13"/></svg>
+        </button>
+        <button id="tvMute" aria-label="Mute">
+          <svg id="tvIconLoud" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" class="fill"/><path d="M16 9a4.2 4.2 0 0 1 0 6M18.6 6.6a7.8 7.8 0 0 1 0 10.8"/></svg>
+          <svg id="tvIconMute" viewBox="0 0 24 24" hidden><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z" class="fill"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>
+        </button>
+      </div>
+    </footer>
+
+  </section>
+</div>
+
+<section id="win" role="dialog" aria-modal="true" aria-hidden="true" tabindex="-1">
+  <div id="winBar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span id="winName"></span>
+    <button id="winClose" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div id="winBody"></div>
+  <div id="winNav">
+    <button id="winPrev">&#8592; Previous</button>
+    <span class="pos"></span>
+    <button id="winNext">Next &#8594;</button>
+  </div>
+</section>
+
+<script>
+/* ===================== DATA ===================== */
+
+const PERSON = {
+  name: 'HENRI BRÜNING',
+  line: 'PORTFOLIO'
+};
+
+const FOLDERS = [
+  { id:'social', name:'VIDEO & MEDIA', color:'#3D8BFF',
+    sub:'Client accounts, content, camera work',
+    proof:'' },
+  { id:'own',    name:'PROJECTS', color:'#FF9A2E',
+    sub:'',
+    proof:'' },
+  { id:'travel', name:'TRAVEL', color:'#22DD84',
+    sub:'Where the work and the year actually happened',
+    proof:'I love adventures',
+    subs:[
+      { id:'t2025', name:'2025', proof:'One adventure every month' },
+      { id:'t2026', name:'2026', proof:'' }
+    ] },
+  { id:'photos', name:'PHOTOS', color:'#B36BFF',
+    sub:'',
+    proof:'' },
+  { id:'gear',   name:'GEAR', color:'#18D2E8',
+    sub:'',
+    proof:'' },
+  { id:'about',  name:'ABOUT & CONTACT', color:'#FFC42E',
+    sub:'Who is behind this, and how to reach him',
+    proof:'Replies within a day' }
+];
+
+const ITEMS = [
+
+/* ---------------- VIDEO & MEDIA ---------------- */
+{
+  f:'social', id:'kelwin', title:'KELWIN LAMPARTER',
+  role:'I am his social media manager · ongoing since 2025',
+  metric:['5000+','followers'],
+  body:"I run social media for a real estate agent across two accounts — his personal brand and the FALC Immobilien Coesfeld office. Both started at zero. Together they are past 5,000 followers.\n\nThe point was never reach on its own. It was creating authenticity, a person that people could trust. The job is to make that trust visible: show the work, show the properties, show the person. Then make it easy to raise a hand.",
+  didTitle:'What I did',
+  did:[
+    'Content strategy and the posting rhythm for both accounts',
+    '100+ scripts written in thematic blocks, so the account never runs dry',
+    'Filming and editing Reels on location, including new-build listings',
+    'ManyChat automations wired to a database: comment a keyword under a listing, get the exposé, land in the pipeline as a qualified lead',
+    'Weekly YouTube vlogs to show his life and build a community'
+  ],
+  quote:{ t:"Working with Henri is simply fun. He doesn't wait for instructions — he finds solutions and implements them. A large part of our social media success comes down to his work.", a:'Kelwin Lamparter · real estate agent' },
+  tags:['REELS','SCRIPTS','MANYCHAT','AUTHENTICITY','REAL ESTATE'],
+  links:[
+    {u:'https://www.instagram.com/kelwinlamparter/', t:'@kelwinlamparter'},
+    {u:'https://www.instagram.com/reels/DY7U6NBse1C/', t:'Reel · example 1'},
+    {u:'https://www.instagram.com/p/DaTRSwAMOas/', t:'Post · example 2'},
+    {u:'https://www.instagram.com/reels/DZIbl2ZMW7Y/', t:'Reel · example 3'}
+  ]
+},
+{
+  f:'social', id:'kebab', title:'KEBAB BROS COESFELD',
+  role:'Food content · TikTok and Instagram',
+  metric:['90,000+','views on short videos'],
+  body:"Short-form food content for a local restaurant. 90,000+ views across TikTok and Instagram in 14 videos — for a kebab shop in a town of 37,000 people.\n\nFood is the purest test of a hook. You have about one second before someone decides they are not hungry, and no amount of editing saves a video that opens badly.",
+  didTitle:'What I did',
+  did:[
+    'Filmed on site during normal service',
+    'Writing authentic scripts',
+    'Bringing the hook: sound, steam and motion before anything else',
+    'Read the retention graphs, then adjusted the next batch'
+  ],
+  tags:['FOOD','TIKTOK','HOOKS','LOCAL'],
+  links:[
+    {u:'https://www.tiktok.com/@kebab_bros_coesfeld', t:'TikTok'},
+    {u:'https://www.instagram.com/reels/DPW4nkxDSv0/', t:'Reel · example'}
+  ]
+},
+{
+  f:'social', id:'klostermann', title:'FLORIAN KLOSTERMANN',
+  role:'Political campaign video · Instagram and TikTok',
+  body:"I wrote a cold outreach email to a mayoral candidate, asking if I could promote his campaign. He said yes. Two days later, we shot many videos about his political views.\n\nCampaign work is different from brand work: you have a specific goal you want to achieve, and the video itself is worthless if you don't deliver results.\n\nHe lost the election. It was 48% to 52%. It's a sad but true story, but I still think I helped him.",
+  didTitle:'What I did',
+  did:[
+    'Filmed at live campaign events',
+    'Same-day edits so the content stayed current',
+    'Adapted each cut for both Instagram and TikTok',
+    'Helped him gain trust'
+  ],
+  tags:['CAMPAIGN','HELPING','EVENTS'],
+  links:[
+    {u:'https://www.instagram.com/florianklostermann/', t:'Instagram'},
+    {u:'https://www.tiktok.com/@florianklostermann', t:'TikTok'}
+  ]
+},
+{
+  f:'social', id:'abenteuer', title:'@HENRI.ABENTEUER',
+  role:'My own channel',
+  metric:['12/12','months of 2025 filmed'],
+  body:"Since I was a child, I have always wanted to travel. In reality, it is very expensive to explore places you have never seen before. Nevertheless, I set myself the goal of going on an adventure every month in 2025, and I did it.\n\nI created a small TikTok account about my travels, but I made many of my videos private because I received hate for them. Now, I see it as a positive learning experience. So I am starting to film my travels, my analogue photography journey, nature, and the lessons I have learned again.",
+  didTitle:'What I did',
+  did:[
+    'Went on an adventure every month in 2025'
+  ],
+  quote:{ t:'I like adventures' },
+  tags:['OWN CHANNEL','ADVENTURES'],
+  links:[
+    {u:'https://www.tiktok.com/@henri.abenteuer/video/7499568530178788630', t:'Video 1'},
+    {u:'https://www.tiktok.com/@henri.abenteuer/video/7532113057070288150', t:'Video 2'},
+    {u:'https://www.tiktok.com/@henri.abenteuer/video/7604976788288130326', t:'Video 3'}
+  ]
+},
+{
+  f:'social', id:'video', title:'HOW TO',
+  role:'How the videos actually get made',
+  metric:['?','How do you create viral videos?'],
+  body:"Have you ever wondered how viral videos work?\n\nI wish I could tell you, but in reality, it depends.\n\nIt depends on the audience you are trying to reach.\n\nYes, of course, I could create a viral video for you that gets millions of views within a few days. However, that is not what you want. You should focus on your audience and authenticity. The reality is that these kinds of videos often rely on hate or misleading information about your business, company, or personality.\n\nThe video should speak for itself. It should be authentic, replicable, informative, and generally enjoyable to watch.\n\nI can help you with posting, creating, and editing authentic and replicable videos that your audience actually enjoys.\n\nAnd please do not forget the hook. It is literally the first thing your audience sees, so you have to make the first few seconds enjoyable to watch.",
+  didTitle:'What I do',
+  did:[
+    'Help grow your audience',
+    'Create a story, something interesting that keeps the audience engaged',
+    'Hook first: the opening line is extremely important',
+    'Titles that spark curiosity',
+    'Analyse the retention graph after every post'
+  ],
+  tags:['AUDIENCE','HOOKS','STORY CIRCLE','RETENTION','EDITING']
+},
+
+{
+  f:'social', id:'floh-social', title:'COESFELD FLOHMARKT',
+  role:'Our own flea market · Instagram from zero',
+  metric:['250K+','views in one month'],
+  body:"We built the Instagram account for our own flea market from zero. In one month: 40 videos, more than 250,000 views and over 1,900 new followers.\n\nNo budget and no ads. We filmed ourselves, the sponsors, the town and the stands, and posted almost every day until the whole of Coesfeld knew the date.\n\nThat is the part people underestimate about a local event: the event is not the work. Getting 70 families to sign up as sellers and the town to show up on a Sunday morning — that is the work, and it happens on the phone.",
+  didTitle:'What we did',
+  did:[
+    '40 videos in one month, filmed and edited ourselves',
+    '250,000+ views and over 1,900 new followers, starting from zero',
+    'Raffles with more than 30 local sponsors to push the reach further',
+    'Answered several hundred messages from first-time sellers by hand'
+  ],
+  tags:['REELS','COMMUNITY','LOCAL','FROM ZERO'],
+  links:[
+    {u:'https://www.instagram.com/coesfeld.flohmarkt/', t:'Channel · @coesfeld.flohmarkt'},
+    {u:'https://www.instagram.com/reel/DZX1_StNPHk/', t:'Video 1'},
+    {u:'https://www.instagram.com/reel/DZdGcPPN0_A/', t:'Video 2'},
+    {u:'https://www.instagram.com/reel/DZsfTKdtYCd/', t:'Video 3'},
+    {u:'https://www.instagram.com/reel/DZR9WmdN8Gv/', t:'Video 4'}
+  ]
+},
+
+/* ---------------- PROJECTS ---------------- */
+{
+  f:'own', id:'flohmarkt', title:'COESFELDER FLOHMARKT',
+  role:'Co-founder · neighbourhood flea market · marketing',
+  metric:['250K+','views · 1,900 new followers in one month'],
+  body:"Why would you buy things online when you can buy them used for less?\n\nThat is the question we asked ourselves. However, in Coesfeld, my hometown, all the flea markets are terrible. They mostly sell new products from China at awful prices. We hate it.\n\nSo, I decided to organise my own flea market in Coesfeld, and one of my classmates joined me. We did everything ourselves, including marketing, press relations, coding, organisation, sales, and handing out flyers.\n\nWe worked with more than 30 local sponsors on Instagram who supported our idea. Together, we organised raffles with prizes worth more than €3,000 for visitors to win. The idea was to strengthen the local economy, encourage people to visit the flea market, and inspire them to buy used items instead of new ones.\n\nThe Instagram account gained more than 1,900 followers in a single month, and our videos received over 250,000 views.\n\nWe also created an interactive website with a stand map. Sellers could register their stands, add what they were selling, and appear directly on the map. This allowed visitors to see every stand and plan their own route through the flea market.",
+  extra:{
+    title:'The website · coesfeldflohmarkt.de',
+    body:"In May, I had the brilliant idea of creating a flea market. So, I scaled it up.\n\nAt a normal flea market, you have some visitors and sellers, but it is never enough to let everyone know that it is taking place. So, I figured there had to be an innovation.\n\n24 hours later: I opened Figma and designed it. Then, I let Claude do the rest and connected it to GitHub, Supabase, a domain provider, and so on.\n\nThe site had an interactive stand map. You could register as a seller, enter the spot in front of your house, and get marked on the map. Everyone could see the marker and knew where your stand was. The advantage: more people knew about the flea market, and visitors could plan their own routes.\n\nOver 10,000 visitors on the site. We also created many giveaways with local businesses to promote the flea market and had over 2,600 participants who wanted to win something. If they won, they had to visit the flea market to collect their prize."
+  },
+  didTitle:'What we did',
+  did:[
+    'Founded a flea market',
+    'Coded the entire website — 10,000+ visitors',
+    'Cooperated with over 30 sponsors',
+    'Social media: 40 videos, 250,000 views, and over 1,900 new followers in one month',
+    'Managed flyers, press relations, and several hundred messages from first-time sellers'
+  ],
+  quote:{ t:'The first Hengte flea market is a full success.', a:'Allgemeine Zeitung' },
+  tags:['EVENT','CODE','COMMUNITY','SPONSORSHIP','PRESS'],
+  links:[
+    {u:'https://coesfeldflohmarkt.de/', t:'coesfeldflohmarkt.de'},
+    {u:'https://www.instagram.com/coesfeld.flohmarkt/', t:'@coesfeld.flohmarkt'},
+    {u:'https://www.instagram.com/reel/DZX1_StNPHk/', t:'Reel · example 1'},
+    {u:'https://www.instagram.com/reel/DZdGcPPN0_A/', t:'Reel · example 2'}
+  ]
+},
+{
+  f:'own', id:'manychat', title:'LEAD AUTOMATIONS',
+  role:'ManyChat × database · keyword funnels per listing',
+  metric:['24/7','lead automation'],
+  body:"When working with @kelwinlamparter on real estate videos, we always include keywords to encourage the audience to comment on things they need.\n\nBehind this, we use ManyChat and a database that collects the information the business needs.\n\nI had to learn a lot, but I now use ManyChat at an advanced level. If you need any help with it, I can help you.",
+  didTitle:'What I did',
+  did:[
+    'Keyword automations configured per post before it goes live',
+    'Database integration so every lead is recorded, not lost in an inbox'
+  ],
+  tags:['MANYCHAT','DATABASE','FUNNEL','CRM']
+},
+{
+  f:'own', id:'internly', title:'INTERNLY',
+  role:'Retired · a platform connecting students with internships',
+  body:"Last year, I had the brilliant idea of connecting students with internships.\n\nYou would probably say, “Wow, nice idea, but how? It is already easy to get an internship.” No, that is not true, at least not in Germany. It is incredibly difficult to find the right, enjoyable, and exciting internship that everyone wants.\n\nSo, I built a website where cool businesses could offer internships. All the students had to do was enter some basic information about themselves, such as their email address and phone number, select the date and duration of the internship, and click “Apply.” It was that easy. There was no need to find the correct email address, send a CV, or stress about things that did not matter.\n\nIt was brilliant. However, I could not do it alone. I invested so much time in the platform, the marketing, and the entire project. Eventually, I shut it down because I started travelling and building other projects.\n\nIt was such a valuable lesson.",
+  didTitle:'What I did',
+  did:[
+    'Built the product on Supabase with student, company and admin roles',
+    'Ran the marketing and the growth',
+    'Decided to stop rather than keep it alive out of pride'
+  ],
+  tags:['PRODUCT','CODING','SUPABASE','LEARNED THE HARD WAY']
+},
+{
+  f:'own', id:'kelwin-p', title:'KELWIN LAMPARTER',
+  role:'Social media manager · ongoing since 2025',
+  metric:['5000+','followers'],
+  body:"I run social media for a real estate agent across two accounts — his personal brand and the FALC Immobilien Coesfeld office. Both started at zero. Together they are past 5,000 followers.\n\nThe point was never reach on its own. It was creating authenticity, a person that people could trust. The job is to make that trust visible: show the work, show the properties, show the person. Then make it easy to raise a hand.",
+  didTitle:'What I did',
+  did:[
+    'Content strategy and the posting rhythm for both accounts',
+    '100+ scripts written in thematic blocks, so the account never runs dry',
+    'Filming and editing Reels on location, including new-build listings',
+    'ManyChat automations wired to a database: comment a keyword under a listing, get the exposé, land in the pipeline as a qualified lead',
+    'Weekly YouTube vlogs to show his life and build a community'
+  ],
+  quote:{ t:"Working with Henri is simply fun. He doesn't wait for instructions — he finds solutions and implements them. A large part of our social media success comes down to his work.", a:'Kelwin Lamparter · real estate agent' },
+  tags:['REELS','SCRIPTS','MANYCHAT','AUTHENTICITY','REAL ESTATE'],
+  links:[
+    {u:'https://www.instagram.com/kelwinlamparter/', t:'@kelwinlamparter'},
+    {u:'https://www.instagram.com/reels/DY7U6NBse1C/', t:'Reel · example 1'},
+    {u:'https://www.instagram.com/p/DaTRSwAMOas/', t:'Post · example 2'},
+    {u:'https://www.instagram.com/reels/DZIbl2ZMW7Y/', t:'Reel · example 3'}
+  ]
+},
+{
+  f:'own', id:'next', title:'???',
+  role:'Not public yet',
+  body:"The next project is in planning.\n\nWanna know it prior? Send me an email.",
+  tags:['IN PLANNING','SOON'],
+  links:[
+    {u:'mailto:henri.coesfeld@gmail.com?subject=The%20next%20project', t:'henri.coesfeld@gmail.com'}
+  ]
+},
+
+/* ---------------- TRAVEL · 2025 ---------------- */
+{
+  f:'t2025', id:'f-jan', title:'PARIS · 24 HOURS', role:'January 2025',
+  metric:['24 h','Düsseldorf → Paris and back'],
+  body:'Night bus out of Düsseldorf at 10pm, in Paris at 6am, back the same day. Rain, storm, no plan. Unforgettable.',
+  didTitle:'What I did',
+  did:['Booked it one day ahead','Slept on a bus, twice','Learned that a plan is optional'],
+  tags:['24H','NIGHT BUS']
+},
+{
+  f:'t2025', id:'f-feb', title:'FARO, PORTUGAL', role:'February 2025',
+  metric:['1st','flight completely on my own'],
+  body:'First flight completely on my own. Small thing on paper. Changes everything that comes after it.',
+  didTitle:'What I did',
+  did:['Planned and booked the whole trip alone','First time handling an airport solo'],
+  tags:['FIRST SOLO FLIGHT']
+},
+{
+  f:'t2025', id:'f-mar', title:'ISTANBUL', role:'March 2025',
+  metric:['1','scammer found, then befriended'],
+  body:'Got scammed by a taxi driver. Tracked him down through his face and the petrol station he always used, found him, confronted him and we ended up friends. Never saw the money again. Worth it anyway.',
+  tags:['ISTANBUL','PERSISTENCE']
+},
+{
+  f:'t2025', id:'f-apr', title:'MALLORCA · 3 WEEKS', role:'April 2025 · FALC Real Estate Mallorca',
+  metric:['3 wks','living and working abroad, alone'],
+  body:'Lived alone in a new country for three weeks, worked in real estate with a real estate company in Mallorca, improved my Spanish.',
+  didTitle:'What I did',
+  did:['Internship with a real estate company','Lived alone, organised everything myself','Worked in Spanish every day'],
+  tags:['WORK ABROAD','REAL ESTATE','ESPAÑOL']
+},
+{
+  f:'t2025', id:'f-may', title:'200 KM NIGHT RIDE', role:'May 2025 · towards Amsterdam',
+  metric:['200 km','of a planned 400 · did not finish'],
+  body:"Left at night on the bike with the idea of riding to Amsterdam and back — 400 km. I made 200. Didn't finish, and learned that I have limits.",
+  didTitle:'What I did',
+  did:['Rode through the night, alone','Turned around at 200 km','Used what went wrong to plan the August ride'],
+  tags:['CYCLING','DID NOT FINISH']
+},
+{
+  f:'t2025', id:'f-jun', title:'ALBANIA · 2 WEEKS', role:'June 2025',
+  metric:['2 wks','snow mountains to beaches'],
+  body:'Snow mountains, hard terrain, beaches, and a language barrier to work around every single day.',
+  didTitle:'What I did',
+  did:['Two weeks moving through the country','Navigated without a shared language'],
+  tags:['MOUNTAINS','LANGUAGE BARRIER']
+},
+{
+  f:'t2025', id:'f-jul', title:'LONDON', role:'July 2025',
+  metric:['2 wks','London, completely solo'],
+  body:'Two weeks in London. Came back with a new friend — a tattoo artist from Chile.',
+  didTitle:'What I did',
+  did:['Two weeks in a city I did not know','Met people rather than sights'],
+  tags:['LONDON','NEW PEOPLE']
+},
+{
+  f:'t2025', id:'f-aug', title:'COESFELD → PARIS', role:'August 2025 · by bike, one week',
+  metric:['600 km','Coesfeld → Paris, by bike'],
+  body:'600 kilometres from Coesfeld to Paris on a bike in one week. Every kilometre was a decision to keep going, made again and again for seven days.',
+  didTitle:'What I did',
+  did:['Planned the route and carried everything','Seven consecutive days on the bike','Finished it'],
+  tags:['600 KM','ENDURANCE']
+},
+{
+  f:'t2025', id:'f-sep', title:'COPENHAGEN', role:'September 2025',
+  metric:['1','weekend'],
+  body:'A weekend. Design, bikes, water, and the cleanest city logic in Europe.',
+  didTitle:'What I did',
+  did:['Weekend trip','Came back loving Denmark'],
+  tags:['WEEKEND','DESIGN']
+},
+{
+  f:'t2025', id:'f-oct', title:'CAIRO · 2 WEEKS', role:'October 2025',
+  metric:['2 wks','Cairo'],
+  body:"Two weeks in Cairo. New friends, new connections, and a completely different definition of the word 'busy'.",
+  didTitle:'What I did',
+  did:['Two weeks in the city','Built connections that outlasted the trip'],
+  tags:['EGYPT','CONNECTIONS']
+},
+{
+  f:'t2025', id:'f-nov', title:'IN A TENT', role:'November 2025 · surviving the German winter',
+  metric:['−10 °C','slept in a tent in the garden'],
+  body:'Slept in a tent in the garden at minus ten degrees, because the plan was one adventure a month and November had nothing else on offer.\n\nDiscomfort you choose is a completely different substance from discomfort that happens to you.',
+  didTitle:'What I did',
+  did:['Kept the promise when there was no trip to take','Learned what −10 °C actually feels like at 4am'],
+  tags:['−10 °C','CHOSEN DISCOMFORT']
+},
+{
+  f:'t2025', id:'f-dec', title:'AUSTRIA · SKI', role:'December 2025',
+  metric:['12/12','months · the year completed'],
+  body:'Closing the year in the Alps. Twelve months, twelve trips, zero months skipped.',
+  didTitle:'What I did',
+  did:['Finished the year without missing a single month'],
+  tags:['ALPS','12/12']
+},
+
+/* ---------------- TRAVEL · 2026 ---------------- */
+{
+  f:'t2026', id:'vietnam', title:'VIETNAM', role:'July / August 2026 · with Finley',
+  metric:['2026','Hanoi and onwards'],
+  body:'Vietnam in the summer of 2026, travelling with a friend. Hanoi first, planned day by day rather than booked as a package.',
+  didTitle:'What I did',
+  did:['Planned the route and the days myself','Travelled with a friend'],
+  tags:['VIETNAM','HANOI','2026']
+},
+
+/* ---------------- PHOTOS ---------------- */
+{
+  f:'photos', id:'photos-soon', title:'COMING SOON',
+  role:'Analogue and digital',
+  body:'The photos are on their way into this folder.'
+},
+
+/* ---------------- GEAR ---------------- */
+{
+  f:'gear', id:'gear', title:'MY GEAR',
+  role:'What do I bring on an adventure?',
+  didTitle:'In the bag',
+  did:[
+    'Sony ZV-E10 · Sigma 16 mm f/1.4 and a 50 mm · ND filters',
+    'DJI Osmo Pocket 3 for anything moving',
+    'iPhone 17 Pro Max',
+    'Canon F-1 with a 50 mm f/1.8 and plenty of 35 mm film',
+    'Rode and DJI microphones',
+    'MacBook for the edit',
+    'DJI drone, only when allowed'
+  ],
+  tags:['SONY','DJI','CANON']
+},
+
+/* ---------------- ABOUT & CONTACT ---------------- */
+{
+  f:'about', id:'henri', title:'WHO I AM',
+  role:'18 · Coesfeld, Germany · Abitur 2027',
+  metric:['HENRI'],
+  body:"Hey, I'm Henri – a creative mind with a passion for bringing ideas to life.\n\nWhether it's editing videos, capturing moments through photography, designing digital spaces or mapping out full content strategies – I love creating experiences that resonate, make sense, and stand out in their own way.\n\nI don't fit neatly into one box. Sometimes I'm deep in creative flow, other times I'm fully focused on travelling. I enjoy working on projects from the very first spark to the final polish – not just the visuals, but also the impact, the mood, and the emotion behind them.\n\nWhat defines me? I connect things – people, ideas, images, and stories. I think visually, I feel in atmospheres and details, and I work just as well on my own as I do in a team. Collaboration energizes me, and I love learning from others.\n\nI'm inspired by contrasts – between analogue and digital, old-school methods and modern tools. I don't chase trends. I build spaces that feel true to me. And I believe in learning by doing, not by waiting for permission.\n\nThis page reflects how I think: curious, hands-on, and always evolving.",
+  didTitle:'Who am I?',
+  did:[
+    'Social media manager for a real estate agent',
+    'Co-founder of the Coesfelder Flohmarkt',
+    'Entrepreneur',
+    'Traveler'
+  ],
+  tags:['SHORT-FORM VIDEO','CONTENT STRATEGY','WEB','AUTOMATION','EVENTS'],
+  links:[
+    {u:'https://www.linkedin.com/in/henribruening/', t:'LinkedIn'},
+    {u:'https://www.instagram.com/henribruening/', t:'Instagram'}
+  ]
+},
+{
+  f:'about', id:'langs', title:'LANGUAGES',
+  role:'German and English fluent · Spanish in progress · some French',
+  metric:['4','languages'],
+  body:'German and English fluently, Spanish in progress, and enough French to survive.\n\nLanguage is the difference between visiting a place and living in it.',
+  didTitle:'What I speak',
+  did:['German — native','English — fluent','Spanish — in progress','French — basic'],
+  tags:['DEUTSCH','ENGLISH','FRANÇAIS','ESPAÑOL']
+},
+{
+  f:'about', id:'school', title:'SCHOOL',
+  role:'Heriburg-Gymnasium Coesfeld · Abitur 2027',
+  metric:['2027','Abitur'],
+  body:"I'm still at school, class of 2027. After that I will be studying and bringing new projects to life.",
+  tags:['SCHOOL']
+},
+{
+  f:'about', id:'contact', title:'CONTACT',
+  role:'Fastest reply: WhatsApp',
+  metric:['< 24 h','typical reply time'],
+  body:'If you have a project, a production, or just a question — write. I answer everything, usually within a day.',
+  tags:['OPEN TO WORK'],
+  links:[
+    {u:'https://wa.me/4915121968192', t:'WhatsApp · +49 151 21968192'},
+    {u:'mailto:henri.coesfeld@gmail.com', t:'henri.coesfeld@gmail.com'},
+    {u:'https://www.linkedin.com/in/henribruening/', t:'LinkedIn'},
+    {u:'https://www.instagram.com/henribruening/', t:'Instagram'},
+    {u:'https://www.tiktok.com/@henri.abenteuer', t:'TikTok · @henri.abenteuer'}
+  ]
+}
+
+];
+
+/* ===================== THE TELEVISION ===================== */
+
+const TVS = [
+  { id:'tv-social', f:'social', title:'ALL VIDEOS', sub:'Everything I filmed, in one place' }
+];
+
+const VIDEOS = [
+  { t:'Kelwin · Reel 1',    who:'KELWIN LAMPARTER',  u:'https://www.instagram.com/reel/DY7U6NBse1C/',  e:'https://www.instagram.com/reel/DY7U6NBse1C/embed' },
+  { t:'Kelwin · Post 2',    who:'KELWIN LAMPARTER',  u:'https://www.instagram.com/p/DaTRSwAMOas/',     e:'https://www.instagram.com/p/DaTRSwAMOas/embed' },
+  { t:'Kelwin · Reel 3',    who:'KELWIN LAMPARTER',  u:'https://www.instagram.com/reel/DZIbl2ZMW7Y/',  e:'https://www.instagram.com/reel/DZIbl2ZMW7Y/embed' },
+  { t:'Kebab Bros',         who:'KEBAB BROS',        u:'https://www.instagram.com/reel/DPW4nkxDSv0/',  e:'https://www.instagram.com/reel/DPW4nkxDSv0/embed' },
+  { t:'Flohmarkt · Video 1',who:'COESFELD FLOHMARKT',u:'https://www.instagram.com/reel/DZX1_StNPHk/',  e:'https://www.instagram.com/reel/DZX1_StNPHk/embed' },
+  { t:'Flohmarkt · Video 2',who:'COESFELD FLOHMARKT',u:'https://www.instagram.com/reel/DZdGcPPN0_A/',  e:'https://www.instagram.com/reel/DZdGcPPN0_A/embed' },
+  { t:'Flohmarkt · Video 3',who:'COESFELD FLOHMARKT',u:'https://www.instagram.com/reel/DZsfTKdtYCd/',  e:'https://www.instagram.com/reel/DZsfTKdtYCd/embed' },
+  { t:'Flohmarkt · Video 4',who:'COESFELD FLOHMARKT',u:'https://www.instagram.com/reel/DZR9WmdN8Gv/',  e:'https://www.instagram.com/reel/DZR9WmdN8Gv/embed' },
+  { t:'Flohmarkt · Video 5',who:'COESFELD FLOHMARKT',u:'https://www.instagram.com/reel/DZpcpBCtOMa/',  e:'https://www.instagram.com/reel/DZpcpBCtOMa/embed' },
+  { t:'Abenteuer · Video 1',who:'@HENRI.ABENTEUER',  u:'https://www.tiktok.com/@henri.abenteuer/video/7499568530178788630', e:'https://www.tiktok.com/embed/v2/7499568530178788630' },
+  { t:'Abenteuer · Video 2',who:'@HENRI.ABENTEUER',  u:'https://www.tiktok.com/@henri.abenteuer/video/7532113057070288150', e:'https://www.tiktok.com/embed/v2/7532113057070288150' },
+  { t:'Abenteuer · Video 3',who:'@HENRI.ABENTEUER',  u:'https://www.tiktok.com/@henri.abenteuer/video/7604976788288130326', e:'https://www.tiktok.com/embed/v2/7604976788288130326' }
+];
+
+/* ===================== LANGUAGES =====================
+   The data above is the English original and is never edited. For German and
+   Spanish, TR holds only the fields that differ; applyLang() rebuilds every
+   object from the English source and lays the chosen language over the top.
+   Everything else in the app just reads .name / .title / .body as before.
+*/
+const LANGS = [
+  { id:'en', short:'EN', name:'English' },
+  { id:'de', short:'DE', name:'Deutsch' },
+  { id:'es', short:'ES', name:'Español' }
+];
+let LANG = 'en';
+
+/* the untouched English source, kept so switching back is lossless */
+const SRC = { folders: JSON.parse(JSON.stringify(FOLDERS)), items: JSON.parse(JSON.stringify(ITEMS)) };
+
+/* ---------- interface strings ---------- */
+const UI = {
+  back:      { en:'Back',            de:'Zurück',          es:'Atrás' },
+  sayHello:  { en:'Say hello',       de:'Schreib mir',     es:'Escríbeme' },
+  item:      { en:'ITEM',            de:'DATEI',           es:'ARCHIVO' },
+  items:     { en:'ITEMS',           de:'DATEIEN',         es:'ARCHIVOS' },
+  links:     { en:'Links',           de:'Links',           es:'Enlaces' },
+  whatIDid:  { en:'What I did',      de:'Was ich gemacht habe', es:'Lo que hice' },
+  prev:      { en:'Previous',        de:'Zurück',          es:'Anterior' },
+  next:      { en:'Next',            de:'Weiter',          es:'Siguiente' },
+  close:     { en:'Close',           de:'Schließen',       es:'Cerrar' },
+  allVideos: { en:'ALL VIDEOS',      de:'ALLE VIDEOS',     es:'TODOS LOS VÍDEOS' },
+  language:  { en:'Language',        de:'Sprache',         es:'Idioma' },
+  play:      { en:'Play',            de:'Abspielen',       es:'Reproducir' },
+  pause:     { en:'Pause',           de:'Pause',           es:'Pausa' },
+  back10:    { en:'Back 10 seconds', de:'10 Sekunden zurück', es:'Atrás 10 segundos' },
+  fwd10:     { en:'Forward 10 seconds', de:'10 Sekunden vor', es:'Adelante 10 segundos' },
+  prevVideo: { en:'Previous video',  de:'Vorheriges Video', es:'Vídeo anterior' },
+  nextVideo: { en:'Next video',      de:'Nächstes Video',  es:'Vídeo siguiente' },
+  mute:      { en:'Mute',            de:'Ton aus',         es:'Silenciar' },
+  unmute:    { en:'Sound on',        de:'Ton an',          es:'Activar sonido' },
+  tvNote:    { en:'Instagram and TikTok do not always allow their videos to play inside another page.',
+               de:'Instagram und TikTok erlauben nicht immer, dass ihre Videos in einer anderen Seite abspielen.',
+               es:'Instagram y TikTok no siempre permiten reproducir sus vídeos dentro de otra página.' },
+  tvOpen:    { en:'Open the video',  de:'Video öffnen',    es:'Abrir el vídeo' },
+  swipeHint: { en:'Swipe for the next video', de:'Wischen für das nächste Video', es:'Desliza para el siguiente vídeo' }
+};
+function t(key){ const v = UI[key]; return v ? (v[LANG] || v.en) : ''; }
+
+/* ---------- content: only what differs from the English ---------- */
+const TR = {
+
+/* =========================== DEUTSCH =========================== */
+de: {
+folders: {
+  social: { name:'VIDEO & MEDIEN', sub:'Kundenaccounts, Content, Kamera' },
+  own:    { name:'PROJEKTE' },
+  travel: { name:'REISEN', sub:'Wo die Arbeit und das Jahr wirklich stattgefunden haben', proof:'Ich liebe Abenteuer' },
+  photos: { name:'FOTOS' },
+  gear:   { name:'AUSRÜSTUNG' },
+  about:  { name:'ÜBER MICH & KONTAKT', sub:'Wer dahintersteckt und wie man ihn erreicht', proof:'Antwort innerhalb eines Tages' }
+},
+subs: {
+  t2025: { proof:'Jeden Monat ein Abenteuer' },
+  t2026: {}
+},
+items: {
+kelwin: {
+  role:'Ich bin sein Social-Media-Manager · seit 2025',
+  metric:['5000+','Follower'],
+  body:"Ich mache Social Media für einen Immobilienmakler, auf zwei Accounts — seine persönliche Marke und das Büro von FALC Immobilien Coesfeld. Beide haben bei null angefangen. Zusammen sind sie jetzt über 5.000 Follower.\n\nEs ging nie um Reichweite an sich. Es ging darum, Authentizität zu schaffen, einen Menschen, dem man vertrauen kann. Die Aufgabe ist, dieses Vertrauen sichtbar zu machen: die Arbeit zeigen, die Objekte zeigen, den Menschen zeigen. Und es dann leicht machen, sich zu melden.",
+  didTitle:'Was ich gemacht habe',
+  did:['Content-Strategie und Posting-Rhythmus für beide Accounts',
+       '100+ Skripte in thematischen Blöcken, damit dem Account nie die Ideen ausgehen',
+       'Reels vor Ort gefilmt und geschnitten, auch bei Neubauobjekten',
+       'ManyChat-Automationen an eine Datenbank angebunden: Keyword unter ein Objekt kommentieren, Exposé bekommen, als qualifizierter Lead in der Pipeline landen',
+       'Wöchentliche YouTube-Vlogs, die sein Leben zeigen und eine Community aufbauen'],
+  quote:{ t:'Die Zusammenarbeit mit Henri macht einfach Spaß. Er wartet nicht auf Anweisungen — er findet Lösungen und setzt sie um. Ein großer Teil unseres Social-Media-Erfolgs geht auf seine Arbeit zurück.', a:'Kelwin Lamparter · Immobilienmakler' },
+  tags:['REELS','SKRIPTE','MANYCHAT','AUTHENTIZITÄT','IMMOBILIEN'],
+  links:['@kelwinlamparter','Reel · Beispiel 1','Post · Beispiel 2','Reel · Beispiel 3']
+},
+kebab: {
+  role:'Food-Content · TikTok und Instagram',
+  metric:['90.000+','Aufrufe auf kurzen Videos'],
+  body:"Kurzvideo-Content für ein lokales Restaurant. 90.000+ Aufrufe auf TikTok und Instagram mit 14 Videos — für einen Dönerladen in einer Stadt mit 37.000 Einwohnern.\n\nEssen ist der ehrlichste Test für einen Hook. Du hast etwa eine Sekunde, bevor jemand entscheidet, dass er keinen Hunger hat, und kein Schnitt rettet ein Video, das schlecht anfängt.",
+  didTitle:'Was ich gemacht habe',
+  did:['Vor Ort im laufenden Betrieb gefilmt',
+       'Authentische Skripte geschrieben',
+       'Den Hook gebracht: Sound, Dampf und Bewegung vor allem anderen',
+       'Die Retention-Graphen gelesen und die nächste Runde danach angepasst'],
+  tags:['FOOD','TIKTOK','HOOKS','LOKAL'],
+  links:['TikTok','Reel · Beispiel']
+},
+klostermann: {
+  role:'Wahlkampfvideo · Instagram und TikTok',
+  body:"Ich habe einem Bürgermeisterkandidaten eine Kaltakquise-Mail geschrieben und gefragt, ob ich seinen Wahlkampf bewerben darf. Er hat Ja gesagt. Zwei Tage später haben wir viele Videos über seine politischen Positionen gedreht.\n\nWahlkampfarbeit ist etwas anderes als Markenarbeit: Du hast ein konkretes Ziel, und das Video selbst ist wertlos, wenn du keine Ergebnisse lieferst.\n\nEr hat die Wahl verloren. 48 % zu 52 %. Eine traurige, aber wahre Geschichte — ich glaube trotzdem, dass ich ihm geholfen habe.",
+  didTitle:'Was ich gemacht habe',
+  did:['Bei Wahlkampfveranstaltungen live gefilmt',
+       'Am selben Tag geschnitten, damit der Content aktuell blieb',
+       'Jeden Schnitt für Instagram und TikTok angepasst',
+       'Ihm geholfen, Vertrauen aufzubauen'],
+  tags:['WAHLKAMPF','HELFEN','EVENTS'],
+  links:['Instagram','TikTok']
+},
+abenteuer: {
+  role:'Mein eigener Kanal',
+  metric:['12/12','Monate aus 2025 gefilmt'],
+  body:"Seit ich ein Kind bin, wollte ich immer reisen. In Wirklichkeit ist es sehr teuer, Orte zu sehen, die man noch nie gesehen hat. Trotzdem habe ich mir vorgenommen, 2025 jeden Monat auf ein Abenteuer zu gehen — und ich habe es geschafft.\n\nIch habe einen kleinen TikTok-Account über meine Reisen gemacht, aber viele Videos auf privat gestellt, weil ich Hass dafür bekommen habe. Heute sehe ich das als positive Lernerfahrung. Deshalb fange ich wieder an, meine Reisen zu filmen, meinen Weg in der analogen Fotografie, die Natur und das, was ich gelernt habe.",
+  didTitle:'Was ich gemacht habe',
+  did:['2025 jeden Monat auf ein Abenteuer gegangen'],
+  quote:{ t:'Ich mag Abenteuer' },
+  tags:['EIGENER KANAL','ABENTEUER'],
+  links:['Video 1','Video 2','Video 3']
+},
+video: {
+  title:"SO GEHT'S",
+  role:'Wie die Videos wirklich entstehen',
+  metric:['?','Wie macht man virale Videos?'],
+  body:"Hast du dich jemals gefragt, wie virale Videos funktionieren?\n\nIch wünschte, ich könnte es dir sagen, aber in Wirklichkeit kommt es darauf an.\n\nEs kommt auf das Publikum an, das du erreichen willst.\n\nKlar, ich könnte dir ein virales Video machen, das in ein paar Tagen Millionen Aufrufe bekommt. Aber das ist nicht das, was du willst. Du solltest dich auf dein Publikum und auf Authentizität konzentrieren. Die Realität ist, dass solche Videos oft auf Hass oder irreführenden Informationen über dein Geschäft, dein Unternehmen oder deine Person beruhen.\n\nDas Video sollte für sich selbst sprechen. Es sollte authentisch sein, wiederholbar, informativ und generell angenehm anzusehen.\n\nIch kann dir beim Posten, Erstellen und Schneiden von authentischen, wiederholbaren Videos helfen, die dein Publikum wirklich gerne sieht.\n\nUnd bitte vergiss den Hook nicht. Er ist buchstäblich das Erste, was dein Publikum sieht — also müssen die ersten Sekunden Spaß machen.",
+  didTitle:'Was ich mache',
+  did:['Dein Publikum wachsen lassen',
+       'Eine Geschichte bauen, etwas Interessantes, das die Leute hält',
+       'Hook zuerst: Der erste Satz ist extrem wichtig',
+       'Titel, die Neugier wecken',
+       'Nach jedem Post den Retention-Graphen auswerten'],
+  tags:['PUBLIKUM','HOOKS','STORY CIRCLE','RETENTION','SCHNITT']
+},
+'floh-social': {
+  role:'Unser eigener Flohmarkt · Instagram von null',
+  metric:['250K+','Aufrufe in einem Monat'],
+  body:"Wir haben den Instagram-Account für unseren eigenen Flohmarkt bei null angefangen. In einem Monat: 40 Videos, mehr als 250.000 Aufrufe und über 1.900 neue Follower.\n\nKein Budget, keine Ads. Wir haben uns selbst gefilmt, die Sponsoren, die Stadt und die Stände, und fast täglich gepostet, bis ganz Coesfeld den Termin kannte.\n\nDas unterschätzen die Leute an einem lokalen Event: Das Event ist nicht die Arbeit. 70 Familien dazu zu bringen, sich als Verkäufer anzumelden, und die Stadt an einem Sonntagmorgen auf die Beine zu bringen — das ist die Arbeit, und die passiert am Handy.",
+  didTitle:'Was wir gemacht haben',
+  did:['40 Videos in einem Monat, selbst gefilmt und geschnitten',
+       '250.000+ Aufrufe und über 1.900 neue Follower, von null an',
+       'Gewinnspiele mit über 30 lokalen Sponsoren, um die Reichweite weiter zu pushen',
+       'Mehrere hundert Nachrichten von Erstverkäufern von Hand beantwortet'],
+  tags:['REELS','COMMUNITY','LOKAL','VON NULL'],
+  links:['Kanal · @coesfeld.flohmarkt','Video 1','Video 2','Video 3','Video 4']
+},
+flohmarkt: {
+  role:'Mitgründer · Nachbarschaftsflohmarkt · Marketing',
+  metric:['250K+','Aufrufe · 1.900 neue Follower in einem Monat'],
+  body:"Warum sollte man Sachen online kaufen, wenn man sie gebraucht für weniger bekommt?\n\nDas ist die Frage, die wir uns gestellt haben. In Coesfeld, meiner Heimatstadt, sind allerdings alle Flohmärkte furchtbar. Da werden meistens Neuwaren aus China zu schlimmen Preisen verkauft. Wir hassen das.\n\nAlso habe ich beschlossen, meinen eigenen Flohmarkt in Coesfeld zu organisieren, und ein Klassenkamerad ist eingestiegen. Wir haben alles selbst gemacht: Marketing, Pressearbeit, Programmierung, Organisation, Vertrieb und Flyer verteilen.\n\nWir haben mit über 30 lokalen Sponsoren auf Instagram zusammengearbeitet, die unsere Idee unterstützt haben. Gemeinsam haben wir Gewinnspiele mit Preisen im Wert von über 3.000 € für die Besucher organisiert. Die Idee war, die lokale Wirtschaft zu stärken, Leute auf den Flohmarkt zu holen und sie dazu zu bringen, gebraucht statt neu zu kaufen.\n\nDer Instagram-Account hat in einem einzigen Monat über 1.900 Follower gewonnen, und unsere Videos haben über 250.000 Aufrufe bekommen.\n\nWir haben außerdem eine interaktive Website mit einer Standkarte gebaut. Verkäufer konnten ihren Stand anmelden, eintragen was sie verkaufen, und tauchten direkt auf der Karte auf. So konnten Besucher jeden Stand sehen und ihre eigene Route über den Flohmarkt planen.",
+  extra:{ title:'Die Website · coesfeldflohmarkt.de',
+    body:"Im Mai hatte ich die geniale Idee, einen Flohmarkt zu machen. Also habe ich es groß aufgezogen.\n\nAuf einem normalen Flohmarkt hast du ein paar Besucher und Verkäufer, aber es reicht nie, um allen mitzuteilen, dass er überhaupt stattfindet. Also dachte ich mir, es muss eine Innovation her.\n\n24 Stunden später: Ich habe Figma aufgemacht und es designt. Den Rest hat Claude gemacht, angebunden an GitHub, Supabase, einen Domain-Anbieter und so weiter.\n\nDie Seite hatte eine interaktive Standkarte. Man konnte sich als Verkäufer eintragen, den Platz vor dem eigenen Haus angeben und wurde auf der Karte markiert. Jeder konnte den Marker sehen und wusste, wo dein Stand ist. Der Vorteil: Mehr Leute wussten vom Flohmarkt, und Besucher konnten ihre eigene Route planen.\n\nÜber 10.000 Besucher auf der Seite. Wir haben außerdem viele Gewinnspiele mit lokalen Geschäften gemacht und hatten über 2.600 Teilnehmer, die etwas gewinnen wollten. Wer gewonnen hat, musste den Flohmarkt besuchen, um den Preis abzuholen." },
+  didTitle:'Was wir gemacht haben',
+  did:['Einen Flohmarkt gegründet',
+       'Die komplette Website programmiert — 10.000+ Besucher',
+       'Mit über 30 Sponsoren zusammengearbeitet',
+       'Social Media: 40 Videos, 250.000 Aufrufe und über 1.900 neue Follower in einem Monat',
+       'Flyer, Pressearbeit und mehrere hundert Nachrichten von Erstverkäufern gemanagt'],
+  quote:{ t:'Der erste Hengter Flohmarkt ist ein voller Erfolg.', a:'Allgemeine Zeitung' },
+  tags:['EVENT','CODE','COMMUNITY','SPONSOREN','PRESSE'],
+  links:['coesfeldflohmarkt.de','@coesfeld.flohmarkt','Reel · Beispiel 1','Reel · Beispiel 2']
+},
+manychat: {
+  title:'LEAD-AUTOMATIONEN',
+  role:'ManyChat × Datenbank · Keyword-Funnel pro Objekt',
+  metric:['24/7','Lead-Automation'],
+  body:"Wenn ich mit @kelwinlamparter an Immobilienvideos arbeite, bauen wir immer Keywords ein, die das Publikum dazu bringen, das zu kommentieren, was sie brauchen.\n\nDahinter läuft ManyChat und eine Datenbank, die die Informationen sammelt, die das Unternehmen braucht.\n\nIch musste viel lernen, aber ich nutze ManyChat inzwischen auf fortgeschrittenem Niveau. Wenn du Hilfe damit brauchst, kann ich dir helfen.",
+  didTitle:'Was ich gemacht habe',
+  did:['Keyword-Automationen pro Post konfiguriert, bevor er live geht',
+       'Datenbankanbindung, damit jeder Lead erfasst wird und nicht im Postfach verschwindet'],
+  tags:['MANYCHAT','DATENBANK','FUNNEL','CRM']
+},
+internly: {
+  role:'Eingestellt · eine Plattform, die Schüler mit Praktika verbindet',
+  body:"Letztes Jahr hatte ich die geniale Idee, Schüler mit Praktika zu verbinden.\n\nDu würdest jetzt wahrscheinlich sagen: „Schöne Idee, aber wie? Ein Praktikum zu bekommen ist doch einfach.“ Nein, das stimmt nicht, jedenfalls nicht in Deutschland. Es ist unglaublich schwer, das richtige, spannende Praktikum zu finden, das alle wollen.\n\nAlso habe ich eine Website gebaut, auf der coole Unternehmen Praktika anbieten konnten. Die Schüler mussten nur ein paar Basisdaten eingeben — E-Mail, Telefonnummer — Datum und Dauer auswählen und auf „Bewerben“ klicken. So einfach war das. Keine Suche nach der richtigen E-Mail-Adresse, kein Lebenslauf, kein Stress mit Dingen, die egal sind.\n\nEs war genial. Aber ich konnte es nicht allein stemmen. Ich habe so viel Zeit in die Plattform, das Marketing und das ganze Projekt gesteckt. Irgendwann habe ich es abgeschaltet, weil ich angefangen habe zu reisen und andere Projekte zu bauen.\n\nEs war eine unglaublich wertvolle Lektion.",
+  didTitle:'Was ich gemacht habe',
+  did:['Das Produkt auf Supabase gebaut, mit Rollen für Schüler, Unternehmen und Admin',
+       'Marketing und Wachstum gemacht',
+       'Entschieden aufzuhören, statt es aus Stolz am Leben zu halten'],
+  tags:['PRODUKT','CODING','SUPABASE','HART GELERNT']
+},
+'kelwin-p': {
+  role:'Social-Media-Manager · seit 2025',
+  metric:['5000+','Follower'],
+  body:"Ich mache Social Media für einen Immobilienmakler, auf zwei Accounts — seine persönliche Marke und das Büro von FALC Immobilien Coesfeld. Beide haben bei null angefangen. Zusammen sind sie jetzt über 5.000 Follower.\n\nEs ging nie um Reichweite an sich. Es ging darum, Authentizität zu schaffen, einen Menschen, dem man vertrauen kann. Die Aufgabe ist, dieses Vertrauen sichtbar zu machen: die Arbeit zeigen, die Objekte zeigen, den Menschen zeigen. Und es dann leicht machen, sich zu melden.",
+  didTitle:'Was ich gemacht habe',
+  did:['Content-Strategie und Posting-Rhythmus für beide Accounts',
+       '100+ Skripte in thematischen Blöcken, damit dem Account nie die Ideen ausgehen',
+       'Reels vor Ort gefilmt und geschnitten, auch bei Neubauobjekten',
+       'ManyChat-Automationen an eine Datenbank angebunden: Keyword kommentieren, Exposé bekommen, als qualifizierter Lead in der Pipeline landen',
+       'Wöchentliche YouTube-Vlogs, die sein Leben zeigen und eine Community aufbauen'],
+  quote:{ t:'Die Zusammenarbeit mit Henri macht einfach Spaß. Er wartet nicht auf Anweisungen — er findet Lösungen und setzt sie um. Ein großer Teil unseres Social-Media-Erfolgs geht auf seine Arbeit zurück.', a:'Kelwin Lamparter · Immobilienmakler' },
+  tags:['REELS','SKRIPTE','MANYCHAT','AUTHENTIZITÄT','IMMOBILIEN'],
+  links:['@kelwinlamparter','Reel · Beispiel 1','Post · Beispiel 2','Reel · Beispiel 3']
+},
+next: {
+  role:'Noch nicht öffentlich',
+  body:"Das nächste Projekt ist in Planung.\n\nWillst du es vorher wissen? Schreib mir eine Mail.",
+  tags:['IN PLANUNG','BALD']
+},
+'f-jan': { title:'PARIS · 24 STUNDEN', role:'Januar 2025', metric:['24 h','Düsseldorf → Paris und zurück'],
+  body:'Nachtbus ab Düsseldorf um 22 Uhr, um 6 Uhr in Paris, am selben Tag zurück. Regen, Sturm, kein Plan. Unvergesslich.',
+  didTitle:'Was ich gemacht habe', did:['Einen Tag vorher gebucht','Zweimal im Bus geschlafen','Gelernt, dass ein Plan optional ist'],
+  tags:['24H','NACHTBUS'] },
+'f-feb': { title:'FARO, PORTUGAL', role:'Februar 2025', metric:['1.','Flug ganz allein'],
+  body:'Der erste Flug ganz allein. Auf dem Papier eine Kleinigkeit. Verändert alles, was danach kommt.',
+  didTitle:'Was ich gemacht habe', did:['Die ganze Reise allein geplant und gebucht','Zum ersten Mal allein durch einen Flughafen'],
+  tags:['ERSTER SOLOFLUG'] },
+'f-mar': { title:'ISTANBUL', role:'März 2025', metric:['1','Betrüger gefunden, dann befreundet'],
+  body:'Ein Taxifahrer hat mich abgezockt. Ich habe ihn über sein Gesicht und die Tankstelle, die er immer benutzte, aufgespürt, gefunden, zur Rede gestellt — und am Ende waren wir Freunde. Das Geld habe ich nie wiedergesehen. Hat sich trotzdem gelohnt.',
+  tags:['ISTANBUL','HARTNÄCKIGKEIT'] },
+'f-apr': { title:'MALLORCA · 3 WOCHEN', role:'April 2025 · FALC Real Estate Mallorca', metric:['3 Wo.','allein im Ausland leben und arbeiten'],
+  body:'Drei Wochen allein in einem neuen Land gelebt, bei einer Immobilienfirma auf Mallorca gearbeitet, mein Spanisch verbessert.',
+  didTitle:'Was ich gemacht habe', did:['Praktikum bei einer Immobilienfirma','Allein gelebt, alles selbst organisiert','Jeden Tag auf Spanisch gearbeitet'],
+  tags:['ARBEIT IM AUSLAND','IMMOBILIEN','ESPAÑOL'] },
+'f-may': { title:'200 KM NACHTFAHRT', role:'Mai 2025 · Richtung Amsterdam', metric:['200 km','von geplanten 400 · nicht geschafft'],
+  body:'Nachts mit dem Rad losgefahren, mit der Idee, nach Amsterdam und zurück zu fahren — 400 km. Ich habe 200 geschafft. Nicht zu Ende gebracht, und gelernt, dass ich Grenzen habe.',
+  didTitle:'Was ich gemacht habe', did:['Allein durch die Nacht gefahren','Bei 200 km umgedreht','Aus dem, was schiefging, die August-Tour geplant'],
+  tags:['RADFAHREN','NICHT GESCHAFFT'] },
+'f-jun': { title:'ALBANIEN · 2 WOCHEN', role:'Juni 2025', metric:['2 Wo.','von Schneebergen bis an den Strand'],
+  body:'Schneeberge, hartes Gelände, Strände und jeden einzelnen Tag eine Sprachbarriere, um die man herumarbeiten muss.',
+  didTitle:'Was ich gemacht habe', did:['Zwei Wochen durch das Land','Ohne gemeinsame Sprache navigiert'],
+  tags:['BERGE','SPRACHBARRIERE'] },
+'f-jul': { title:'LONDON', role:'Juli 2025', metric:['2 Wo.','London, komplett allein'],
+  body:'Zwei Wochen in London. Zurückgekommen mit einem neuen Freund — einem Tätowierer aus Chile.',
+  didTitle:'Was ich gemacht habe', did:['Zwei Wochen in einer Stadt, die ich nicht kannte','Menschen getroffen statt Sehenswürdigkeiten'],
+  tags:['LONDON','NEUE MENSCHEN'] },
+'f-aug': { title:'COESFELD → PARIS', role:'August 2025 · mit dem Rad, eine Woche', metric:['600 km','Coesfeld → Paris, mit dem Rad'],
+  body:'600 Kilometer von Coesfeld nach Paris mit dem Rad, in einer Woche. Jeder Kilometer war die Entscheidung weiterzumachen, sieben Tage lang immer wieder neu getroffen.',
+  didTitle:'Was ich gemacht habe', did:['Die Route geplant und alles selbst getragen','Sieben Tage am Stück auf dem Rad','Durchgezogen'],
+  tags:['600 KM','AUSDAUER'] },
+'f-sep': { title:'KOPENHAGEN', role:'September 2025', metric:['1','Wochenende'],
+  body:'Ein Wochenende. Design, Fahrräder, Wasser und die sauberste Stadtlogik Europas.',
+  didTitle:'Was ich gemacht habe', did:['Wochenendtrip','Zurückgekommen und Dänemark geliebt'],
+  tags:['WOCHENENDE','DESIGN'] },
+'f-oct': { title:'KAIRO · 2 WOCHEN', role:'Oktober 2025', metric:['2 Wo.','Kairo'],
+  body:'Zwei Wochen in Kairo. Neue Freunde, neue Kontakte und eine völlig andere Definition des Wortes „voll“.',
+  didTitle:'Was ich gemacht habe', did:['Zwei Wochen in der Stadt','Kontakte aufgebaut, die die Reise überdauert haben'],
+  tags:['ÄGYPTEN','KONTAKTE'] },
+'f-nov': { title:'IM ZELT', role:'November 2025 · den deutschen Winter überstehen', metric:['−10 °C','im Zelt im Garten geschlafen'],
+  body:'Bei minus zehn Grad im Zelt im Garten geschlafen, weil der Plan ein Abenteuer pro Monat war und der November sonst nichts zu bieten hatte.\n\nUnbehagen, das man sich aussucht, ist etwas völlig anderes als Unbehagen, das einem passiert.',
+  didTitle:'Was ich gemacht habe', did:['Das Versprechen gehalten, als es keine Reise zu machen gab','Gelernt, wie sich −10 °C um 4 Uhr morgens wirklich anfühlen'],
+  tags:['−10 °C','GEWÄHLTES UNBEHAGEN'] },
+'f-dec': { title:'ÖSTERREICH · SKI', role:'Dezember 2025', metric:['12/12','Monate · das Jahr komplett'],
+  body:'Das Jahr in den Alpen abschließen. Zwölf Monate, zwölf Reisen, kein Monat ausgelassen.',
+  didTitle:'Was ich gemacht habe', did:['Das Jahr beendet, ohne einen einzigen Monat auszulassen'],
+  tags:['ALPEN','12/12'] },
+vietnam: { role:'Juli / August 2026 · mit Finley', metric:['2026','Hanoi und weiter'],
+  body:'Vietnam im Sommer 2026, unterwegs mit einem Freund. Zuerst Hanoi, Tag für Tag geplant statt als Pauschalreise gebucht.',
+  didTitle:'Was ich gemacht habe', did:['Route und Tage selbst geplant','Mit einem Freund gereist'],
+  tags:['VIETNAM','HANOI','2026'] },
+'photos-soon': { title:'BALD HIER', role:'Analog und digital', body:'Die Fotos sind auf dem Weg in diesen Ordner.' },
+gear: { title:'MEINE AUSRÜSTUNG', role:'Was nehme ich mit auf ein Abenteuer?', didTitle:'Im Rucksack',
+  did:['Sony ZV-E10 · Sigma 16 mm f/1.4 und ein 50 mm · ND-Filter',
+       'DJI Osmo Pocket 3 für alles, was sich bewegt',
+       'iPhone 17 Pro Max',
+       'Canon F-1 mit einem 50 mm f/1.8 und reichlich 35-mm-Film',
+       'Rode- und DJI-Mikrofone',
+       'MacBook für den Schnitt',
+       'DJI-Drohne, nur wenn erlaubt'],
+  tags:['SONY','DJI','CANON'] },
+henri: {
+  title:'WER ICH BIN', role:'18 · Coesfeld, Deutschland · Abitur 2027',
+  body:"Hey, ich bin Henri – ein kreativer Kopf mit der Leidenschaft, Ideen lebendig zu machen.\n\nOb Videos schneiden, Momente fotografieren, digitale Räume gestalten oder ganze Content-Strategien entwerfen – ich liebe es, Erlebnisse zu schaffen, die hängen bleiben, Sinn ergeben und auf ihre eigene Art herausstechen.\n\nIch passe nicht sauber in eine Schublade. Manchmal bin ich tief im kreativen Flow, manchmal voll auf das Reisen konzentriert. Ich arbeite gern an Projekten vom ersten Funken bis zum letzten Schliff – nicht nur an der Optik, sondern auch an der Wirkung, der Stimmung und dem Gefühl dahinter.\n\nWas mich ausmacht? Ich verbinde Dinge – Menschen, Ideen, Bilder und Geschichten. Ich denke visuell, ich fühle in Atmosphären und Details, und ich arbeite allein genauso gut wie im Team. Zusammenarbeit gibt mir Energie, und ich lerne gern von anderen.\n\nMich inspirieren Gegensätze – zwischen analog und digital, alter Schule und modernen Werkzeugen. Ich renne keinen Trends hinterher. Ich baue Räume, die sich für mich richtig anfühlen. Und ich glaube daran, durch Machen zu lernen, nicht durchs Warten auf Erlaubnis.\n\nDiese Seite zeigt, wie ich denke: neugierig, praktisch und immer in Bewegung.",
+  didTitle:'Wer bin ich?',
+  did:['Social-Media-Manager für einen Immobilienmakler','Mitgründer des Coesfelder Flohmarkts','Unternehmer','Reisender'],
+  tags:['KURZVIDEO','CONTENT-STRATEGIE','WEB','AUTOMATION','EVENTS'],
+  links:['LinkedIn','Instagram']
+},
+langs: {
+  title:'SPRACHEN', role:'Deutsch und Englisch fließend · Spanisch in Arbeit · etwas Französisch',
+  metric:['4','Sprachen'],
+  body:'Deutsch und Englisch fließend, Spanisch in Arbeit und genug Französisch zum Überleben.\n\nSprache ist der Unterschied zwischen einen Ort besuchen und an einem Ort leben.',
+  didTitle:'Was ich spreche',
+  did:['Deutsch — Muttersprache','Englisch — fließend','Spanisch — in Arbeit','Französisch — Grundlagen'],
+  tags:['DEUTSCH','ENGLISCH','FRANÇAIS','ESPAÑOL']
+},
+school: { title:'SCHULE', role:'Heriburg-Gymnasium Coesfeld · Abitur 2027', metric:['2027','Abitur'],
+  body:'Ich bin noch in der Schule, Jahrgang 2027. Danach werde ich studieren und neue Projekte zum Leben erwecken.',
+  tags:['SCHULE'] },
+contact: { title:'KONTAKT', role:'Am schnellsten: WhatsApp', metric:['< 24 h','übliche Antwortzeit'],
+  body:'Wenn du ein Projekt hast, eine Produktion oder einfach eine Frage — schreib mir. Ich antworte auf alles, meistens innerhalb eines Tages.',
+  tags:['OFFEN FÜR AUFTRÄGE'],
+  links:['WhatsApp · +49 151 21968192','henri.coesfeld@gmail.com','LinkedIn','Instagram','TikTok · @henri.abenteuer'] }
+}},
+
+/* =========================== ESPAÑOL =========================== */
+es: {
+folders: {
+  social: { name:'VÍDEO Y MEDIOS', sub:'Cuentas de clientes, contenido, cámara' },
+  own:    { name:'PROYECTOS' },
+  travel: { name:'VIAJES', sub:'Donde de verdad ocurrieron el trabajo y el año', proof:'Me encantan las aventuras' },
+  photos: { name:'FOTOS' },
+  gear:   { name:'EQUIPO' },
+  about:  { name:'SOBRE MÍ Y CONTACTO', sub:'Quién está detrás de esto y cómo localizarlo', proof:'Respondo en menos de un día' }
+},
+subs: {
+  t2025: { proof:'Una aventura cada mes' },
+  t2026: {}
+},
+items: {
+kelwin: {
+  role:'Soy su social media manager · desde 2025',
+  metric:['5000+','seguidores'],
+  body:"Llevo las redes de un agente inmobiliario en dos cuentas: su marca personal y la oficina de FALC Immobilien Coesfeld. Las dos empezaron de cero. Juntas ya pasan de 5.000 seguidores.\n\nNunca se trató del alcance por sí mismo. Se trataba de crear autenticidad, una persona en la que la gente pudiera confiar. El trabajo consiste en hacer visible esa confianza: enseñar el trabajo, enseñar los inmuebles, enseñar a la persona. Y después ponérselo fácil a quien quiera dar el paso.",
+  didTitle:'Lo que hice',
+  did:['Estrategia de contenido y ritmo de publicación para las dos cuentas',
+       '100+ guiones escritos en bloques temáticos, para que la cuenta nunca se quede sin ideas',
+       'Grabación y montaje de Reels sobre el terreno, también en obra nueva',
+       'Automatizaciones de ManyChat conectadas a una base de datos: comenta una palabra clave bajo un inmueble, recibe el dosier y entra en el embudo como lead cualificado',
+       'Vlogs semanales en YouTube para mostrar su día a día y construir comunidad'],
+  quote:{ t:'Trabajar con Henri es sencillamente divertido. No espera instrucciones: encuentra soluciones y las aplica. Buena parte de nuestro éxito en redes se debe a su trabajo.', a:'Kelwin Lamparter · agente inmobiliario' },
+  tags:['REELS','GUIONES','MANYCHAT','AUTENTICIDAD','INMOBILIARIA'],
+  links:['@kelwinlamparter','Reel · ejemplo 1','Publicación · ejemplo 2','Reel · ejemplo 3']
+},
+kebab: {
+  role:'Contenido gastronómico · TikTok e Instagram',
+  metric:['90.000+','visualizaciones en vídeos cortos'],
+  body:"Contenido corto de comida para un restaurante local. Más de 90.000 visualizaciones entre TikTok e Instagram con 14 vídeos, para un kebab en una ciudad de 37.000 habitantes.\n\nLa comida es la prueba más honesta de un buen gancho. Tienes más o menos un segundo antes de que alguien decida que no tiene hambre, y ningún montaje salva un vídeo que empieza mal.",
+  didTitle:'Lo que hice',
+  did:['Grabado en el local durante el servicio normal',
+       'Guiones auténticos',
+       'El gancho primero: sonido, vapor y movimiento antes que nada',
+       'Leer las curvas de retención y ajustar la siguiente tanda'],
+  tags:['COMIDA','TIKTOK','GANCHOS','LOCAL'],
+  links:['TikTok','Reel · ejemplo']
+},
+klostermann: {
+  role:'Vídeo de campaña política · Instagram y TikTok',
+  body:"Le escribí un correo en frío a un candidato a la alcaldía preguntándole si podía promocionar su campaña. Dijo que sí. Dos días después grabamos muchos vídeos sobre sus posiciones políticas.\n\nLa campaña no es como el trabajo de marca: hay un objetivo concreto, y el vídeo en sí no vale nada si no da resultados.\n\nPerdió las elecciones. 48 % contra 52 %. Es una historia triste pero real, y aun así creo que le ayudé.",
+  didTitle:'Lo que hice',
+  did:['Grabación en actos de campaña en directo',
+       'Montaje el mismo día para que el contenido siguiera siendo actual',
+       'Cada corte adaptado a Instagram y a TikTok',
+       'Le ayudé a ganar confianza'],
+  tags:['CAMPAÑA','AYUDAR','EVENTOS'],
+  links:['Instagram','TikTok']
+},
+abenteuer: {
+  role:'Mi propio canal',
+  metric:['12/12','meses de 2025 grabados'],
+  body:"Desde pequeño siempre he querido viajar. En realidad es carísimo conocer sitios que no has visto nunca. Aun así me propuse salir de aventura cada mes de 2025, y lo conseguí.\n\nCreé una cuenta pequeña de TikTok sobre mis viajes, pero puse muchos vídeos en privado porque recibí odio por ellos. Ahora lo veo como un aprendizaje positivo. Por eso vuelvo a grabar mis viajes, mi camino en la fotografía analógica, la naturaleza y lo que he aprendido.",
+  didTitle:'Lo que hice',
+  did:['Salí de aventura cada mes de 2025'],
+  quote:{ t:'Me gustan las aventuras' },
+  tags:['CANAL PROPIO','AVENTURAS'],
+  links:['Vídeo 1','Vídeo 2','Vídeo 3']
+},
+video: {
+  title:'CÓMO SE HACE',
+  role:'Cómo se hacen realmente los vídeos',
+  metric:['?','¿Cómo se hacen vídeos virales?'],
+  body:"¿Alguna vez te has preguntado cómo funcionan los vídeos virales?\n\nOjalá pudiera decírtelo, pero en realidad depende.\n\nDepende del público al que quieras llegar.\n\nSí, claro que podría hacerte un vídeo viral con millones de visualizaciones en pocos días. Pero eso no es lo que quieres. Deberías centrarte en tu público y en la autenticidad. La realidad es que ese tipo de vídeos se apoya muchas veces en el odio o en información engañosa sobre tu negocio, tu empresa o tu persona.\n\nEl vídeo debe hablar por sí mismo. Debe ser auténtico, repetible, informativo y, en general, agradable de ver.\n\nPuedo ayudarte a publicar, crear y montar vídeos auténticos y repetibles que tu público disfrute de verdad.\n\nY por favor no olvides el gancho. Es literalmente lo primero que ve tu público, así que los primeros segundos tienen que engancharle.",
+  didTitle:'Lo que hago',
+  did:['Hacer crecer tu público',
+       'Construir una historia, algo interesante que mantenga a la gente',
+       'El gancho primero: la primera frase es importantísima',
+       'Títulos que despiertan curiosidad',
+       'Analizar la curva de retención después de cada publicación'],
+  tags:['PÚBLICO','GANCHOS','STORY CIRCLE','RETENCIÓN','MONTAJE']
+},
+'floh-social': {
+  role:'Nuestro propio mercadillo · Instagram desde cero',
+  metric:['250K+','visualizaciones en un mes'],
+  body:"Montamos la cuenta de Instagram de nuestro propio mercadillo desde cero. En un mes: 40 vídeos, más de 250.000 visualizaciones y más de 1.900 seguidores nuevos.\n\nSin presupuesto y sin anuncios. Nos grabamos a nosotros, a los patrocinadores, a la ciudad y a los puestos, y publicamos casi a diario hasta que todo Coesfeld conocía la fecha.\n\nEso es lo que la gente subestima de un evento local: el evento no es el trabajo. Conseguir que 70 familias se apunten como vendedores y que la ciudad aparezca un domingo por la mañana, eso sí es el trabajo, y ocurre en el móvil.",
+  didTitle:'Lo que hicimos',
+  did:['40 vídeos en un mes, grabados y montados por nosotros',
+       'Más de 250.000 visualizaciones y más de 1.900 seguidores nuevos, desde cero',
+       'Sorteos con más de 30 patrocinadores locales para empujar el alcance',
+       'Varios cientos de mensajes de vendedores primerizos contestados a mano'],
+  tags:['REELS','COMUNIDAD','LOCAL','DESDE CERO'],
+  links:['Canal · @coesfeld.flohmarkt','Vídeo 1','Vídeo 2','Vídeo 3','Vídeo 4']
+},
+flohmarkt: {
+  role:'Cofundador · mercadillo de barrio · marketing',
+  metric:['250K+','visualizaciones · 1.900 seguidores nuevos en un mes'],
+  body:"¿Por qué comprar cosas por internet si puedes comprarlas de segunda mano por menos?\n\nEsa es la pregunta que nos hicimos. Pero en Coesfeld, mi ciudad, todos los mercadillos son horribles. Venden sobre todo productos nuevos de China a precios espantosos. Lo odiamos.\n\nAsí que decidí organizar mi propio mercadillo en Coesfeld, y un compañero de clase se apuntó. Lo hicimos todo nosotros: marketing, prensa, programación, organización, ventas y repartir folletos.\n\nTrabajamos con más de 30 patrocinadores locales en Instagram que apoyaron la idea. Juntos organizamos sorteos con premios por valor de más de 3.000 € para los visitantes. La idea era fortalecer la economía local, animar a la gente a venir al mercadillo e invitarla a comprar de segunda mano en vez de nuevo.\n\nLa cuenta de Instagram ganó más de 1.900 seguidores en un solo mes, y nuestros vídeos superaron las 250.000 visualizaciones.\n\nTambién creamos una web interactiva con un mapa de puestos. Los vendedores podían registrar su puesto, indicar qué vendían y aparecer directamente en el mapa. Así los visitantes veían todos los puestos y planificaban su propia ruta por el mercadillo.",
+  extra:{ title:'La web · coesfeldflohmarkt.de',
+    body:"En mayo se me ocurrió la brillante idea de montar un mercadillo. Así que lo hice a lo grande.\n\nEn un mercadillo normal tienes algunos visitantes y algunos vendedores, pero nunca basta para que todo el mundo se entere de que se celebra. Así que pensé que hacía falta una innovación.\n\n24 horas después: abrí Figma y lo diseñé. El resto lo hizo Claude, conectado a GitHub, Supabase, un proveedor de dominios y demás.\n\nLa web tenía un mapa de puestos interactivo. Podías registrarte como vendedor, indicar el sitio delante de tu casa y quedar marcado en el mapa. Todo el mundo veía la marca y sabía dónde estaba tu puesto. La ventaja: más gente se enteraba del mercadillo y los visitantes podían planificar su ruta.\n\nMás de 10.000 visitantes en la web. Además hicimos muchos sorteos con comercios locales y tuvimos más de 2.600 participantes que querían ganar algo. Quien ganaba tenía que visitar el mercadillo para recoger su premio." },
+  didTitle:'Lo que hicimos',
+  did:['Fundamos un mercadillo',
+       'Programamos la web entera — más de 10.000 visitantes',
+       'Colaboramos con más de 30 patrocinadores',
+       'Redes: 40 vídeos, 250.000 visualizaciones y más de 1.900 seguidores nuevos en un mes',
+       'Gestionamos folletos, prensa y varios cientos de mensajes de vendedores primerizos'],
+  quote:{ t:'El primer mercadillo de Hengte es todo un éxito.', a:'Allgemeine Zeitung' },
+  tags:['EVENTO','CÓDIGO','COMUNIDAD','PATROCINIO','PRENSA'],
+  links:['coesfeldflohmarkt.de','@coesfeld.flohmarkt','Reel · ejemplo 1','Reel · ejemplo 2']
+},
+manychat: {
+  title:'AUTOMATIZACIÓN DE LEADS',
+  role:'ManyChat × base de datos · embudos por palabra clave',
+  metric:['24/7','automatización de leads'],
+  body:"Cuando trabajo con @kelwinlamparter en vídeos inmobiliarios, siempre incluimos palabras clave para animar al público a comentar lo que necesita.\n\nDetrás usamos ManyChat y una base de datos que recoge la información que el negocio necesita.\n\nTuve que aprender mucho, pero ahora manejo ManyChat a nivel avanzado. Si necesitas ayuda con esto, puedo echarte una mano.",
+  didTitle:'Lo que hice',
+  did:['Automatizaciones por palabra clave configuradas en cada publicación antes de salir',
+       'Integración con base de datos para que ningún lead se pierda en una bandeja de entrada'],
+  tags:['MANYCHAT','BASE DE DATOS','EMBUDO','CRM']
+},
+internly: {
+  role:'Cerrado · una plataforma para conectar estudiantes con prácticas',
+  body:"El año pasado se me ocurrió la brillante idea de conectar estudiantes con prácticas.\n\nProbablemente dirías: «Buena idea, pero ¿cómo? Si conseguir prácticas ya es fácil». No, no lo es, al menos no en Alemania. Es increíblemente difícil encontrar esas prácticas buenas y emocionantes que todo el mundo quiere.\n\nAsí que construí una web donde empresas interesantes podían ofrecer prácticas. Los estudiantes solo tenían que poner unos datos básicos, como su correo y su teléfono, elegir la fecha y la duración, y pulsar «Solicitar». Así de fácil. Sin buscar la dirección de correo correcta, sin mandar un CV, sin estresarse con cosas que no importan.\n\nEra brillante. Pero no podía solo. Invertí muchísimo tiempo en la plataforma, en el marketing y en todo el proyecto. Al final lo cerré porque empecé a viajar y a construir otros proyectos.\n\nFue una lección valiosísima.",
+  didTitle:'Lo que hice',
+  did:['Construí el producto sobre Supabase con roles de estudiante, empresa y administrador',
+       'Llevé el marketing y el crecimiento',
+       'Decidí parar en lugar de mantenerlo vivo por orgullo'],
+  tags:['PRODUCTO','PROGRAMACIÓN','SUPABASE','APRENDIDO A LA FUERZA']
+},
+'kelwin-p': {
+  role:'Social media manager · desde 2025',
+  metric:['5000+','seguidores'],
+  body:"Llevo las redes de un agente inmobiliario en dos cuentas: su marca personal y la oficina de FALC Immobilien Coesfeld. Las dos empezaron de cero. Juntas ya pasan de 5.000 seguidores.\n\nNunca se trató del alcance por sí mismo. Se trataba de crear autenticidad, una persona en la que la gente pudiera confiar. El trabajo consiste en hacer visible esa confianza: enseñar el trabajo, enseñar los inmuebles, enseñar a la persona. Y después ponérselo fácil a quien quiera dar el paso.",
+  didTitle:'Lo que hice',
+  did:['Estrategia de contenido y ritmo de publicación para las dos cuentas',
+       '100+ guiones escritos en bloques temáticos, para que la cuenta nunca se quede sin ideas',
+       'Grabación y montaje de Reels sobre el terreno, también en obra nueva',
+       'Automatizaciones de ManyChat conectadas a una base de datos: comenta una palabra clave, recibe el dosier y entra como lead cualificado',
+       'Vlogs semanales en YouTube para mostrar su día a día y construir comunidad'],
+  quote:{ t:'Trabajar con Henri es sencillamente divertido. No espera instrucciones: encuentra soluciones y las aplica. Buena parte de nuestro éxito en redes se debe a su trabajo.', a:'Kelwin Lamparter · agente inmobiliario' },
+  tags:['REELS','GUIONES','MANYCHAT','AUTENTICIDAD','INMOBILIARIA'],
+  links:['@kelwinlamparter','Reel · ejemplo 1','Publicación · ejemplo 2','Reel · ejemplo 3']
+},
+next: {
+  role:'Todavía no es público',
+  body:"El próximo proyecto está en preparación.\n\n¿Quieres saberlo antes que nadie? Escríbeme un correo.",
+  tags:['EN PREPARACIÓN','PRONTO']
+},
+'f-jan': { title:'PARÍS · 24 HORAS', role:'Enero de 2025', metric:['24 h','Düsseldorf → París y vuelta'],
+  body:'Autobús nocturno desde Düsseldorf a las 22:00, en París a las 6:00, de vuelta el mismo día. Lluvia, tormenta, ningún plan. Inolvidable.',
+  didTitle:'Lo que hice', did:['Lo reservé con un día de antelación','Dormí en un autobús, dos veces','Aprendí que el plan es opcional'],
+  tags:['24H','AUTOBÚS NOCTURNO'] },
+'f-feb': { title:'FARO, PORTUGAL', role:'Febrero de 2025', metric:['1º','vuelo completamente solo'],
+  body:'El primer vuelo completamente solo. Sobre el papel es poca cosa. Cambia todo lo que viene después.',
+  didTitle:'Lo que hice', did:['Planifiqué y reservé el viaje entero solo','Primera vez en un aeropuerto sin nadie'],
+  tags:['PRIMER VUELO SOLO'] },
+'f-mar': { title:'ESTAMBUL', role:'Marzo de 2025', metric:['1','estafador encontrado, después amigo'],
+  body:'Un taxista me estafó. Lo rastreé por su cara y por la gasolinera que usaba siempre, lo encontré, se lo eché en cara y acabamos siendo amigos. El dinero no lo volví a ver. Mereció la pena igual.',
+  tags:['ESTAMBUL','INSISTENCIA'] },
+'f-apr': { title:'MALLORCA · 3 SEMANAS', role:'Abril de 2025 · FALC Real Estate Mallorca', metric:['3 sem.','vivir y trabajar fuera, solo'],
+  body:'Viví solo en un país nuevo durante tres semanas, trabajé en una inmobiliaria en Mallorca y mejoré mi español.',
+  didTitle:'Lo que hice', did:['Prácticas en una inmobiliaria','Viví solo y lo organicé todo yo','Trabajé en español todos los días'],
+  tags:['TRABAJO EN EL EXTRANJERO','INMOBILIARIA','ESPAÑOL'] },
+'f-may': { title:'200 KM DE NOCHE', role:'Mayo de 2025 · rumbo a Ámsterdam', metric:['200 km','de 400 previstos · no lo terminé'],
+  body:'Salí de noche en bici con la idea de llegar a Ámsterdam y volver: 400 km. Hice 200. No lo terminé, y aprendí que tengo límites.',
+  didTitle:'Lo que hice', did:['Pedaleé toda la noche, solo','Di la vuelta a los 200 km','Usé lo que salió mal para planificar la ruta de agosto'],
+  tags:['CICLISMO','NO TERMINADO'] },
+'f-jun': { title:'ALBANIA · 2 SEMANAS', role:'Junio de 2025', metric:['2 sem.','de montañas nevadas a la playa'],
+  body:'Montañas nevadas, terreno duro, playas y una barrera idiomática que sortear cada día.',
+  didTitle:'Lo que hice', did:['Dos semanas recorriendo el país','Me orienté sin un idioma común'],
+  tags:['MONTAÑAS','BARRERA IDIOMÁTICA'] },
+'f-jul': { title:'LONDRES', role:'Julio de 2025', metric:['2 sem.','Londres, completamente solo'],
+  body:'Dos semanas en Londres. Volví con un amigo nuevo: un tatuador chileno.',
+  didTitle:'Lo que hice', did:['Dos semanas en una ciudad que no conocía','Conocí gente en vez de monumentos'],
+  tags:['LONDRES','GENTE NUEVA'] },
+'f-aug': { title:'COESFELD → PARÍS', role:'Agosto de 2025 · en bici, una semana', metric:['600 km','Coesfeld → París, en bici'],
+  body:'600 kilómetros de Coesfeld a París en bici en una semana. Cada kilómetro fue la decisión de seguir, tomada una y otra vez durante siete días.',
+  didTitle:'Lo que hice', did:['Planifiqué la ruta y lo llevé todo encima','Siete días seguidos sobre la bici','Lo terminé'],
+  tags:['600 KM','RESISTENCIA'] },
+'f-sep': { title:'COPENHAGUE', role:'Septiembre de 2025', metric:['1','fin de semana'],
+  body:'Un fin de semana. Diseño, bicis, agua y la lógica urbana más limpia de Europa.',
+  didTitle:'Lo que hice', did:['Escapada de fin de semana','Volví enamorado de Dinamarca'],
+  tags:['FIN DE SEMANA','DISEÑO'] },
+'f-oct': { title:'EL CAIRO · 2 SEMANAS', role:'Octubre de 2025', metric:['2 sem.','El Cairo'],
+  body:'Dos semanas en El Cairo. Amigos nuevos, contactos nuevos y una definición completamente distinta de la palabra «lleno».',
+  didTitle:'Lo que hice', did:['Dos semanas en la ciudad','Construí contactos que duraron más que el viaje'],
+  tags:['EGIPTO','CONTACTOS'] },
+'f-nov': { title:'EN UNA TIENDA', role:'Noviembre de 2025 · sobrevivir al invierno alemán', metric:['−10 °C','dormí en una tienda en el jardín'],
+  body:'Dormí en una tienda de campaña en el jardín a diez grados bajo cero, porque el plan era una aventura al mes y noviembre no ofrecía otra cosa.\n\nLa incomodidad que eliges es una sustancia completamente distinta de la incomodidad que te ocurre.',
+  didTitle:'Lo que hice', did:['Cumplí la promesa cuando no había viaje que hacer','Aprendí lo que son −10 °C de verdad a las 4 de la mañana'],
+  tags:['−10 °C','INCOMODIDAD ELEGIDA'] },
+'f-dec': { title:'AUSTRIA · ESQUÍ', role:'Diciembre de 2025', metric:['12/12','meses · el año completo'],
+  body:'Cerrar el año en los Alpes. Doce meses, doce viajes, ni un mes saltado.',
+  didTitle:'Lo que hice', did:['Terminé el año sin saltarme un solo mes'],
+  tags:['ALPES','12/12'] },
+vietnam: { role:'Julio / agosto de 2026 · con Finley', metric:['2026','Hanói y más allá'],
+  body:'Vietnam en el verano de 2026, viajando con un amigo. Primero Hanói, planificado día a día en vez de reservado como paquete.',
+  didTitle:'Lo que hice', did:['Planifiqué la ruta y los días yo mismo','Viajé con un amigo'],
+  tags:['VIETNAM','HANÓI','2026'] },
+'photos-soon': { title:'MUY PRONTO', role:'Analógico y digital', body:'Las fotos están de camino a esta carpeta.' },
+gear: { title:'MI EQUIPO', role:'¿Qué me llevo a una aventura?', didTitle:'En la mochila',
+  did:['Sony ZV-E10 · Sigma 16 mm f/1.4 y un 50 mm · filtros ND',
+       'DJI Osmo Pocket 3 para todo lo que se mueve',
+       'iPhone 17 Pro Max',
+       'Canon F-1 con un 50 mm f/1.8 y carrete de 35 mm de sobra',
+       'Micrófonos Rode y DJI',
+       'MacBook para el montaje',
+       'Dron DJI, solo donde está permitido'],
+  tags:['SONY','DJI','CANON'] },
+henri: {
+  title:'QUIÉN SOY', role:'18 · Coesfeld, Alemania · Abitur 2027',
+  body:"Hola, soy Henri: una mente creativa con pasión por dar vida a las ideas.\n\nYa sea montando vídeos, capturando momentos con la cámara, diseñando espacios digitales o trazando estrategias de contenido completas, me encanta crear experiencias que resuenan, que tienen sentido y que destacan a su manera.\n\nNo encajo del todo en una sola casilla. A veces estoy metido de lleno en el flujo creativo, otras veces completamente centrado en viajar. Disfruto los proyectos desde la primera chispa hasta el último retoque: no solo lo visual, también el impacto, el ambiente y la emoción que hay detrás.\n\n¿Qué me define? Conecto cosas: personas, ideas, imágenes e historias. Pienso en imágenes, siento en atmósferas y detalles, y trabajo igual de bien solo que en equipo. La colaboración me da energía y me encanta aprender de los demás.\n\nMe inspiran los contrastes: entre lo analógico y lo digital, entre los métodos de siempre y las herramientas modernas. No persigo tendencias. Construyo espacios que siento míos. Y creo en aprender haciendo, no esperando permiso.\n\nEsta página refleja cómo pienso: con curiosidad, con las manos y siempre en movimiento.",
+  didTitle:'¿Quién soy?',
+  did:['Social media manager de un agente inmobiliario','Cofundador del Coesfelder Flohmarkt','Emprendedor','Viajero'],
+  tags:['VÍDEO CORTO','ESTRATEGIA DE CONTENIDO','WEB','AUTOMATIZACIÓN','EVENTOS'],
+  links:['LinkedIn','Instagram']
+},
+langs: {
+  title:'IDIOMAS', role:'Alemán e inglés con fluidez · español en curso · algo de francés',
+  metric:['4','idiomas'],
+  body:'Alemán e inglés con fluidez, español en curso y el francés justo para sobrevivir.\n\nEl idioma es la diferencia entre visitar un sitio y vivir en él.',
+  didTitle:'Lo que hablo',
+  did:['Alemán — lengua materna','Inglés — fluido','Español — en curso','Francés — básico'],
+  tags:['DEUTSCH','ENGLISH','FRANÇAIS','ESPAÑOL']
+},
+school: { title:'COLEGIO', role:'Heriburg-Gymnasium Coesfeld · Abitur 2027', metric:['2027','Abitur'],
+  body:'Todavía estoy en el instituto, promoción de 2027. Después estudiaré y daré vida a proyectos nuevos.',
+  tags:['COLEGIO'] },
+contact: { title:'CONTACTO', role:'Lo más rápido: WhatsApp', metric:['< 24 h','tiempo de respuesta habitual'],
+  body:'Si tienes un proyecto, una producción o simplemente una pregunta, escríbeme. Contesto a todo, normalmente en menos de un día.',
+  tags:['DISPONIBLE PARA TRABAJAR'],
+  links:['WhatsApp · +49 151 21968192','henri.coesfeld@gmail.com','LinkedIn','Instagram','TikTok · @henri.abenteuer'] }
+}}
+
+};
+
+/* ---------- rebuild every object for the chosen language ---------- */
+function applyLang(){
+  const pack = TR[LANG] || null;
+
+  FOLDERS.forEach((f,i)=>{
+    const src = SRC.folders[i];
+    f.name = src.name; f.sub = src.sub; f.proof = src.proof;
+    const o = pack && pack.folders && pack.folders[f.id];
+    if (o){ if (o.name!=null) f.name=o.name; if (o.sub!=null) f.sub=o.sub; if (o.proof!=null) f.proof=o.proof; }
+    (f.subs||[]).forEach((s,j)=>{
+      const ssrc = src.subs[j];
+      s.name = ssrc.name; s.proof = ssrc.proof;
+      const so = pack && pack.subs && pack.subs[s.id];
+      if (so){ if (so.name!=null) s.name=so.name; if (so.proof!=null) s.proof=so.proof; }
+    });
+  });
+
+  ITEMS.forEach(it=>{
+    const src = SRC.items.find(x=> x.id === it.id);
+    if (!src) return;                       // photos injected from media.json — left alone
+    ['title','role','body','didTitle'].forEach(k=>{ if (src[k]!=null) it[k]=src[k]; });
+    if (src.metric) it.metric = src.metric.slice();
+    if (src.did)    it.did    = src.did.slice();
+    if (src.tags)   it.tags   = src.tags.slice();
+    if (src.quote)  it.quote  = { t:src.quote.t, a:src.quote.a };
+    if (src.extra)  it.extra  = { title:src.extra.title, body:src.extra.body };
+    if (src.links)  it.links  = src.links.map(l=> ({u:l.u, t:l.t}));
+
+    const o = pack && pack.items && pack.items[it.id];
+    if (!o) return;
+    ['title','role','body','didTitle'].forEach(k=>{ if (o[k]!=null) it[k]=o[k]; });
+    if (o.metric && it.metric) it.metric = o.metric.slice();
+    if (o.did)   it.did   = o.did.slice();
+    if (o.tags)  it.tags  = o.tags.slice();
+    if (o.quote) it.quote = { t:o.quote.t, a:o.quote.a };
+    if (o.extra) it.extra = { title:o.extra.title, body:o.extra.body };
+    // links keep their addresses; only the visible label is translated
+    if (o.links && it.links) o.links.forEach((label,k)=>{ if (it.links[k] && label) it.links[k].t = label; });
+  });
+}
+
+function setLang(id){
+  if (!LANGS.some(l=> l.id === id)) return;
+  LANG = id;
+  try{ localStorage.setItem('henri.lang', id); }catch(e){}
+  document.documentElement.lang = id;
+  applyLang();
+}
+
+(function pickLang(){
+  let want = null;
+  try{ want = localStorage.getItem('henri.lang'); }catch(e){}
+  if (!want){
+    const nav = (navigator.language || 'en').slice(0,2).toLowerCase();
+    if (LANGS.some(l=> l.id === nav)) want = nav;
+  }
+  LANG = want && LANGS.some(l=> l.id === want) ? want : 'en';
+  document.documentElement.lang = LANG;
+  applyLang();
+})();
+
+/* ===================== SPACE ===================== */
+function BOOT_SPACE(){
+'use strict';
+
+const cv  = document.getElementById('sky');
+const ctx = cv.getContext('2d', { alpha:false });
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let W=0, H=0, DPR=1, CX=0, CY=0, FOCAL=900;
+const v3 = (x,y,z)=>({x,y,z});
+const nrm = v=>{ const l=Math.hypot(v.x,v.y,v.z)||1; return v3(v.x/l,v.y/l,v.z/l); };
+const cross = (a,b)=> v3(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x);
+const clamp = (v,a,b)=> v<a?a:v>b?b:v;
+
+let _s = 20071019;
+const rnd = ()=>{ _s^=_s<<13; _s^=_s>>>17; _s^=_s<<5; return (_s>>>0)/4294967296; };
+
+/* ---------------- stars ---------------- */
+const STARS = [];
+for (let i=0;i<820;i++){
+  const u=rnd()*2-1, th=rnd()*6.2832, s=Math.sqrt(1-u*u), r=1500+rnd()*2800;
+  STARS.push({ x:Math.cos(th)*s*r, y:u*r, z:Math.sin(th)*s*r,
+               m:0.22+Math.pow(rnd(),3.2)*1.25, tw:rnd()*6.28, ts:0.3+rnd()*1.1 });
+}
+
+/* ---------------- camera ---------------- */
+const cam = {
+  yaw:0, pitch:0.05, dist:1500,
+  gyaw:0, gpitch:0.05, gdist:700,
+  vyaw:0, vpitch:0, zoom:1,
+  drift:0, idle:0
+};
+let camPos=v3(0,0,0), Rt=v3(1,0,0), Up=v3(0,1,0), Fw=v3(0,0,1);
+const HOME = v3(0, 40, 700);           // the direction every object faces at rest
+
+function updateCam(dt){
+  const k = reduce ? 1 : 1-Math.pow(0.0022, dt);
+  cam.yaw   += (cam.gyaw   - cam.yaw)*k;
+  cam.pitch += (cam.gpitch - cam.pitch)*k;
+  cam.dist  += (cam.gdist  - cam.dist)*k;
+  const cp=Math.cos(cam.pitch), sp=Math.sin(cam.pitch);
+  const cyw=Math.cos(cam.yaw), syw=Math.sin(cam.yaw);
+  const d = v3(cp*syw, sp, cp*cyw);
+  camPos = v3(d.x*cam.dist, d.y*cam.dist, d.z*cam.dist);
+  Fw = v3(-d.x,-d.y,-d.z);
+  Rt = nrm(cross(Fw, v3(0,1,0)));
+  Up = nrm(cross(Rt, Fw));
+}
+
+const _p = {x:0,y:0,z:0,s:1,ok:false};
+function project(px,py,pz,o){
+  const dx=px-camPos.x, dy=py-camPos.y, dz=pz-camPos.z;
+  const z = dx*Fw.x+dy*Fw.y+dz*Fw.z;
+  if (z < 40){ o.ok=false; return o; }
+  const s = FOCAL/z;
+  o.x = CX + (dx*Rt.x+dy*Rt.y+dz*Rt.z)*s;
+  o.y = CY - (dx*Up.x+dy*Up.y+dz*Up.z)*s;
+  o.z = z; o.s = s; o.ok = true;
+  return o;
+}
+
+/* ---------------- objects ---------------- */
+/* kind: 'folder' | 'sheet' */
+function makeObj(kind, data){
+  return {
+    kind, data,
+    p: v3(0,0,0), roll: 0, phase: rnd()*6.28, bob: 0.5+rnd()*0.8,
+    a: 0, ga: 0,          // alpha, goal alpha
+    sc: 0.86, gsc: 1,     // scale
+    hot: 0,
+    poly: null, cx:0, cy:0, ps:1, vis:false
+  };
+}
+
+const ALLF = [];
+FOLDERS.forEach(f=>{
+  ALLF.push(f);
+  (f.subs||[]).forEach(sub=>{ sub.parent = f.id; sub.color = f.color; ALLF.push(sub); });
+});
+const folderObjs = ALLF.map(f => makeObj('folder', f));
+const fObjById = {}; folderObjs.forEach(o=> fObjById[o.data.id] = o);
+const fById = {}; ALLF.forEach(f=> fById[f.id] = f);
+const sheetObjs  = ITEMS.map(it => makeObj('sheet', it));
+sheetObjs.forEach(o=>{ const f = fById[o.data.f]; o.col = (f && f.color) || '#ffffff'; });
+const tvObjs = (typeof TVS !== 'undefined' ? TVS : []).map(t => makeObj('tv', t));
+tvObjs.forEach(o=>{ const f = fById[o.data.f]; o.col = (f && f.color) || '#ffffff'; });
+folderObjs.forEach(o=>{ o.col = o.data.color || '#ffffff'; });
+
+/* what sits inside a folder: its sub-folders, or its files */
+function childrenOf(id){
+  if (!id) return FOLDERS.map(f=> fObjById[f.id]);
+  const f = fById[id];
+  if (f && f.subs && f.subs.length) return f.subs.map(s=> fObjById[s.id]);
+  return sheetObjs.filter(o=> o.data.f === id)
+         .concat(tvObjs.filter(o=> o.data.f === id));
+}
+function countOf(id){
+  const f = fById[id];
+  if (f && f.subs && f.subs.length) return f.subs.reduce((n,s)=> n + countOf(s.id), 0);
+  return ITEMS.filter(i=> i.f === id).length;
+}
+
+/* ---------------- layout ---------------- */
+let fitDist = 700;
+
+function layoutRoot(list){
+  const n = list.length;
+  if (W >= 860){
+    // a loose constellation on a grid — every folder gets its own depth and angle,
+    // and enough room underneath for its label
+    if (n <= 3){
+      const S = n === 2
+        ? [[-215,  30,  55],[ 215, -18, -55]]
+        : [[-360,  44,  60],[   0, -18, 130],[ 360,  30, -70]];
+      list.forEach((o,i)=>{
+        const k = S[i % S.length];
+        o.p = v3(k[0], k[1], k[2]);
+        o.yaw = [0.26,-0.24,-0.10][i%3]; o.pitch = [-0.07,0.06,0.11][i%3]; o.roll = [-0.03,0.028,0.035][i%3];
+      });
+    } else {
+      const cols = n <= 4 ? 2 : 3;
+      const rows = Math.ceil(n/cols);
+      const cellW = 470, cellH = 395;
+      const Z    = [-215, -60, -265, 125, -25, -305, 60, -180];
+      const YAW  = [ 0.30,-0.06,-0.32, 0.24, 0.04,-0.26, 0.18,-0.20];
+      const PIT  = [-0.11,-0.13, 0.09, 0.12, 0.15,-0.08, 0.05, 0.10];
+      const RL   = [-0.04, 0.03,-0.02, 0.04,-0.03, 0.025,-0.03, 0.02];
+      list.forEach((o,i)=>{
+        const row = Math.floor(i/cols), col = i%cols;
+        const inRow = Math.min(cols, n - row*cols);
+        o.p = v3((col - (inRow-1)/2)*cellW, ((rows-1)/2 - row)*cellH, Z[i%8]);
+        o.yaw = YAW[i%8]; o.pitch = PIT[i%8]; o.roll = RL[i%8];
+      });
+    }
+  } else {
+    // On a phone an even grid reads as a grid. Every folder sits at the SAME
+    // depth, so they are all the same size and every label lands on the same
+    // line — the tilt is what keeps them three-dimensional, not the distance.
+    const cols = 2, cw = 168, ch = 196;
+    list.forEach((o,i)=>{
+      const row = Math.floor(i/cols), col = i%cols;
+      const rowCount = Math.min(cols, n - row*cols);
+      o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
+      o.yaw = (col ? -1 : 1) * 0.13; o.pitch = 0.05; o.roll = (col ? -1 : 1) * 0.015;
+    });
+  }
+  // cap how large a folder may get, so a level with only two of them stays calm
+  const fhw = W>=860 ? 106 : 60;
+  const maxPx = W>=860 ? 300 : W*0.40;
+  fitDist = fitFor(list, W>=860 ? 122 : 74, W>=860 ? 184 : 172, 2*fhw*FOCAL/maxPx);
+}
+
+function layoutSheets(list){
+  const n = list.length;
+  const small = W < 700;
+  const cols = small ? 2 : (n<=4 ? 2 : (n<=6 ? 3 : 4));
+  const rows = Math.ceil(n/cols);
+  const hw = small ? 76 : 92, hh = small ? 60 : 62;
+  const hasTV = list.some(o=> o.kind === 'tv');   // the aerial and feet need headroom
+  const cw = 2*hw + (small ? 30 : 54) + (hasTV ? (small ? 16 : 26) : 0);
+  const ch = 2*hh + (small ? 34 : 58) + (hasTV ? (small ? 26 : 38) : 0);
+  list.forEach((o,i)=>{
+    const row = Math.floor(i/cols), col = i%cols;
+    const inRow = Math.min(cols, n - row*cols);
+    o.p = v3((col - (inRow-1)/2) * cw, ((rows-1)/2 - row) * ch, ((i*37)%5 - 2) * 5);
+    o.roll = 0; o.yaw = 0; o.pitch = 0;
+  });
+  // never let a small folder magnify its files into billboards
+  const maxCardPx = small ? W*0.44 : 290;
+  fitDist = fitFor(list, hw + 14, hh + 16, 2*hw*FOCAL/maxCardPx);
+}
+
+/* push the camera back until every object — at its own depth — sits inside the frame */
+function fitFor(list, hw, hh, minDist){
+  let d = Math.max(380, minDist || 380);
+  const mx = W*0.455;
+  const my = Math.max(H*0.22, Math.min(CY, H-CY) - (W<860 ? 34 : 44));
+  for (let pass=0; pass<60; pass++){
+    let ok = true;
+    for (const o of list){
+      const dist = Math.max(120, d - o.p.z);
+      if ((Math.abs(o.p.x)+hw)*FOCAL/dist > mx || (Math.abs(o.p.y)+hh)*FOCAL/dist > my){ ok = false; break; }
+    }
+    if (ok) return clamp(d, 380, 4000);
+    d *= 1.05;
+  }
+  return clamp(d, 380, 4000);
+}
+
+/* ---------------- geometry ---------------- */
+function basis(o){
+  // a file is a billboard — it always squarely faces the viewer, so its text
+  // is never skewed, never rotated and never overlaps its neighbour
+  if (o.kind === 'sheet' || o.kind === 'tv') return [Rt, Up, v3(-Fw.x,-Fw.y,-Fw.z)];
+  const sw = reduce ? 0 : Math.sin(time*0.13 + o.phase);
+  const sw2 = reduce ? 0 : Math.sin(time*0.097 + o.phase*1.7);
+  const yaw   = (o.yaw||0)   + sw*0.19;
+  const pitch = (o.pitch||0) + sw2*0.10;
+  const cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const N = nrm(v3(Math.sin(yaw)*cp, sp, Math.cos(yaw)*cp));
+  let U = nrm(cross(v3(0,1,0), N));
+  let V = nrm(cross(N, U));
+  const r = o.roll + (reduce ? 0 : sw2*0.03), c = Math.cos(r), s = Math.sin(r);
+  return [ v3(U.x*c+V.x*s, U.y*c+V.y*s, U.z*c+V.z*s),
+           v3(V.x*c-U.x*s, V.y*c-U.y*s, V.z*c-U.z*s),
+           N ];
+}
+
+function pt(o, U, V, x, y, out, z, N){
+  const k = o.sc;
+  const amp = (o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : 1;
+  const bobY = reduce ? 0 : Math.sin(time*0.26*o.bob + o.phase)*9*amp;
+  const bobX = reduce ? 0 : Math.cos(time*0.19*o.bob + o.phase*1.3)*6*amp;
+  const dz = z ? z*k : 0;
+  const nx = N ? N.x*dz : 0, ny = N ? N.y*dz : 0, nz = N ? N.z*dz : 0;
+  return project(o.p.x + bobX + U.x*x*k + V.x*y*k + nx,
+                 o.p.y + bobY + U.y*x*k + V.y*y*k + ny,
+                 o.p.z          + U.z*x*k + V.z*y*k + nz, out);
+}
+
+const FOLDER_PATH = (hw,hh)=>[
+  [-hw,-hh],[hw,-hh],[hw,hh],[-hw+62,hh],[-hw+50,hh+19],[-hw,hh+19]
+];
+
+/* ---------------- state ---------------- */
+/* the root is a space you fly around; inside a folder you are reading, so it barely tilts */
+let YAWLIM = 1.15, PITCHLIM = 0.78;
+let time = 0, state = 'root', openFolder = null, hover = null;
+let visible = [];
+
+function setLevel(folderId){
+  openFolder = folderId;
+  state = folderId ? 'folder' : 'root';
+  const kids = childrenOf(folderId);
+  const asFolders = kids.length && kids[0].kind === 'folder';
+  if (asFolders) layoutRoot(kids); else layoutSheets(kids);
+  folderObjs.forEach(o=>{ o.ga=0; o.gsc=0.8; o.delay=0; });
+  sheetObjs.forEach(o=>{ o.ga=0; o.gsc=0.8; o.delay=0; });
+  tvObjs.forEach(o=>{ o.ga=0; o.gsc=0.8; o.delay=0; });
+  kids.forEach((o,i)=>{ o.ga=1; o.gsc=1; o.a=0; o.sc=0.8; o.delay = i*(asFolders?0.06:0.035); });
+  visible = kids;
+  const readingFiles = kids.length && kids[0].kind === 'sheet';
+  YAWLIM   = readingFiles ? 0.26 : 1.15;
+  PITCHLIM = readingFiles ? 0.17 : 0.78;
+  cam.zoom = 1; cam.gdist = fitDist;
+  cam.gyaw = 0; cam.gpitch = 0.05; cam.vyaw = 0; cam.vpitch = 0;
+  hover = null;
+}
+
+/* ---------------- drawing ---------------- */
+const P0={x:0,y:0,z:0,s:1,ok:false}, PT=[];
+for (let i=0;i<8;i++) PT.push({x:0,y:0,z:0,s:1,ok:false});
+
+function strokePoly(pts, n){
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i=1;i<n;i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.closePath();
+}
+
+function drawFolder(o){
+  const [U,V,N] = basis(o);
+  const small = W < 860;
+  const hw = small ? 62 : 106, hh = small ? 48 : 76, dep = small ? 12 : 34;
+  const fh = hh * 0.70;                       // the front panel sits lower than the back
+
+  // back panel, with the tab
+  const back = [[-hw,-hh],[hw,-hh],[hw,hh],[-hw+0.70*hw,hh],[-hw+0.56*hw,hh+hh*0.30],[-hw,hh+hh*0.30]];
+  const B = [];
+  let ok = true;
+  for (let i=0;i<back.length;i++){
+    const q = {x:0,y:0,z:0,s:1,ok:false};
+    pt(o,U,V,back[i][0],back[i][1],q,0,N);
+    if (!q.ok) ok=false; B.push(q);
+  }
+  // front panel, pushed toward the viewer
+  const front = [[-hw,-hh],[hw,-hh],[hw,fh],[-hw,fh]];
+  const F = [];
+  for (let i=0;i<4;i++){
+    const q = {x:0,y:0,z:0,s:1,ok:false};
+    pt(o,U,V,front[i][0],front[i][1],q,dep,N);
+    if (!q.ok) ok=false; F.push(q);
+  }
+  if (!ok){ o.vis=false; return; }
+  pt(o,U,V,0,0,P0,dep*0.5,N);
+  o.cx=P0.x; o.cy=P0.y; o.ps=P0.s; o.vis=true;
+  o.polys = [ B.map(q=>[q.x,q.y]), F.map(q=>[q.x,q.y]) ];
+
+  const a = o.a, hot = o.hot;
+  const lw = Math.min(1.9, Math.max(0.75, P0.s*1.1));
+  ctx.lineJoin = 'round';
+
+  // back
+  ctx.beginPath();
+  ctx.moveTo(B[0].x,B[0].y);
+  for (let i=1;i<B.length;i++) ctx.lineTo(B[i].x,B[i].y);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(1,3,8,'+(0.82*a).toFixed(3)+')';
+  ctx.fill();
+  ctx.strokeStyle = colA(o.col, (0.52 + hot*0.40)*a);
+  ctx.lineWidth = lw; ctx.stroke();
+
+  // the spine, joining front to back at the bottom corners
+  ctx.beginPath();
+  ctx.moveTo(B[0].x,B[0].y); ctx.lineTo(F[0].x,F[0].y);
+  ctx.moveTo(B[1].x,B[1].y); ctx.lineTo(F[1].x,F[1].y);
+  ctx.strokeStyle = colA(o.col, (0.42+hot*0.4)*a);
+  ctx.lineWidth = lw*0.85; ctx.stroke();
+
+  // front
+  ctx.beginPath();
+  ctx.moveTo(F[0].x,F[0].y);
+  for (let i=1;i<4;i++) ctx.lineTo(F[i].x,F[i].y);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(2,5,11,'+((0.90+hot*0.06)*a).toFixed(3)+')';
+  ctx.fill();
+  ctx.strokeStyle = colA(o.col, (0.88 + hot*0.12)*a);
+  ctx.lineWidth = lw*1.05; ctx.stroke();
+
+  // label, upright in screen space, below the deepest point
+  const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
+  const sz = clamp(13.6*P0.s, 1, 120);
+  let yBase = lowest + 22*P0.s;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  setFont(sz, 500, '0.16em');
+  ctx.fillStyle = 'rgba(255,255,255,'+((0.74+hot*0.26)*a).toFixed(3)+')';
+  wrap(o.data.name, hw*(small ? 3.1 : 2.3)*P0.s, 2).forEach(ln=>{ ctx.fillText(ln, P0.x, yBase); yBase += sz*1.55; });
+  setFont(clamp(10.6*P0.s, 1, 100), 400, '0.18em');
+  ctx.fillStyle = colA(o.col, (0.44+hot*0.4)*a);
+  const nItems = countOf(o.data.id);
+  ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), P0.x, yBase + sz*0.3);
+  if (hot > 0.03 && W >= 860 && o.data.proof){
+    setFont(clamp(9.5*P0.s, 1, 100), 400, '0.06em');
+    ctx.fillStyle = 'rgba(255,255,255,'+(0.5*hot*a).toFixed(3)+')';
+    ctx.fillText(o.data.proof, P0.x, yBase + sz*1.85);
+  }
+}
+
+function drawTV(o){
+  const [U,V,N] = basis(o);
+  const small = W < 700;
+  const hw = small ? 76 : 92, hh = small ? 60 : 62, dep = small ? 9 : 13;
+  const AER = 0.34, FT = 0.15;                  // aerial and feet, as a share of the body
+
+  const box = [[-hw,-hh],[hw,-hh],[hw,hh],[-hw,hh]];
+  const F=[], B=[];
+  let ok = true;
+  for (let i=0;i<4;i++){
+    const a={x:0,y:0,z:0,s:1,ok:false}, b={x:0,y:0,z:0,s:1,ok:false};
+    pt(o,U,V,box[i][0],box[i][1],a,dep,N); pt(o,U,V,box[i][0],box[i][1],b,-dep,N);
+    if (!a.ok || !b.ok) ok=false;
+    F.push(a); B.push(b);
+  }
+  if (!ok){ o.vis=false; return; }
+  pt(o,U,V,0,0,P0,dep,N);
+  o.cx=P0.x; o.cy=P0.y; o.ps=P0.s; o.vis=true;
+  o.polys = [ F.map(q=>[q.x,q.y]) ];
+
+  const a = o.a, hot = o.hot;
+  const lw = Math.min(2, Math.max(0.8, P0.s*1.15));
+  ctx.lineJoin = 'round';
+
+  // the body, seen slightly from the side
+  ctx.beginPath();
+  ctx.moveTo(B[0].x,B[0].y); for (let i=1;i<4;i++) ctx.lineTo(B[i].x,B[i].y); ctx.closePath();
+  ctx.fillStyle = 'rgba(1,3,8,'+(0.82*a).toFixed(3)+')';
+  ctx.fill();
+  ctx.strokeStyle = colA(o.col, (0.34+hot*0.3)*a); ctx.lineWidth = lw*0.8; ctx.stroke();
+  ctx.beginPath();
+  for (let i=0;i<4;i++){ ctx.moveTo(B[i].x,B[i].y); ctx.lineTo(F[i].x,F[i].y); }
+  ctx.strokeStyle = colA(o.col, (0.30+hot*0.3)*a); ctx.lineWidth = lw*0.7; ctx.stroke();
+
+  // aerial
+  const T1={x:0,y:0,z:0,s:1,ok:false}, T2={x:0,y:0,z:0,s:1,ok:false}, T0={x:0,y:0,z:0,s:1,ok:false};
+  pt(o,U,V,0,hh,T0,dep,N);
+  pt(o,U,V,-hw*0.40, hh+hh*AER*0.86, T1, dep, N);
+  pt(o,U,V, hw*0.28, hh+hh*AER,      T2, dep, N);
+  if (T0.ok && T1.ok && T2.ok){
+    ctx.beginPath();
+    ctx.moveTo(T1.x,T1.y); ctx.lineTo(T0.x,T0.y); ctx.lineTo(T2.x,T2.y);
+    ctx.strokeStyle = colA(o.col, (0.55+hot*0.45)*a); ctx.lineWidth = lw*0.8; ctx.stroke();
+    ctx.beginPath(); ctx.arc(T1.x,T1.y,Math.max(1.1,P0.s*2.2),0,6.2832);
+    ctx.arc(T2.x,T2.y,Math.max(1.1,P0.s*2.2),0,6.2832);
+    ctx.fillStyle = colA(o.col, (0.7+hot*0.3)*a); ctx.fill();
+  }
+
+  // legs
+  const L=[[-hw*0.55,-hh],[-hw*0.70,-hh-hh*FT],[hw*0.55,-hh],[hw*0.70,-hh-hh*FT]];
+  const LP=[];
+  for (let i=0;i<4;i++){ const q={x:0,y:0,z:0,s:1,ok:false}; pt(o,U,V,L[i][0],L[i][1],q,dep,N); LP.push(q); }
+  if (LP.every(q=>q.ok)){
+    ctx.beginPath();
+    ctx.moveTo(LP[0].x,LP[0].y); ctx.lineTo(LP[1].x,LP[1].y);
+    ctx.moveTo(LP[2].x,LP[2].y); ctx.lineTo(LP[3].x,LP[3].y);
+    ctx.strokeStyle = colA(o.col, (0.5+hot*0.4)*a); ctx.lineWidth = lw*1.1; ctx.stroke();
+  }
+
+  // the front frame
+  ctx.beginPath();
+  ctx.moveTo(F[0].x,F[0].y); for (let i=1;i<4;i++) ctx.lineTo(F[i].x,F[i].y); ctx.closePath();
+  ctx.fillStyle = 'rgba(2,5,11,'+((0.90+hot*0.05)*a).toFixed(3)+')';
+  ctx.fill();
+  ctx.strokeStyle = colA(o.col, (0.9+hot*0.1)*a); ctx.lineWidth = lw*1.15; ctx.stroke();
+
+  // the screen
+  const inset = 0.845, ih = 0.70;
+  const SC=[[-hw*inset,-hh*ih],[hw*inset,-hh*ih],[hw*inset,hh*ih],[-hw*inset,hh*ih]];
+  const SP=[];
+  for (let i=0;i<4;i++){ const q={x:0,y:0,z:0,s:1,ok:false}; pt(o,U,V,SC[i][0],SC[i][1],q,dep,N); SP.push(q); }
+  if (SP.every(q=>q.ok)){
+    ctx.beginPath();
+    ctx.moveTo(SP[0].x,SP[0].y); for (let i=1;i<4;i++) ctx.lineTo(SP[i].x,SP[i].y); ctx.closePath();
+    ctx.fillStyle = colA(o.col, (0.055 + hot*0.075)*a);
+    ctx.fill();
+    ctx.strokeStyle = colA(o.col, (0.4+hot*0.35)*a); ctx.lineWidth = lw*0.7; ctx.stroke();
+    // scan lines
+    ctx.save(); ctx.beginPath();
+    ctx.moveTo(SP[0].x,SP[0].y); for (let i=1;i<4;i++) ctx.lineTo(SP[i].x,SP[i].y); ctx.closePath(); ctx.clip();
+    ctx.strokeStyle = colA(o.col, 0.10*a); ctx.lineWidth = Math.max(0.5, P0.s*0.7);
+    for (let k=-6;k<=6;k++){
+      const y = hh*ih*(k/6.5);
+      const p1={x:0,y:0,z:0,s:1,ok:false}, p2={x:0,y:0,z:0,s:1,ok:false};
+      pt(o,U,V,-hw*inset,y,p1,dep,N); pt(o,U,V,hw*inset,y,p2,dep,N);
+      if (p1.ok&&p2.ok){ ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke(); }
+    }
+    ctx.restore();
+  }
+
+  // play triangle
+  const tri=[[-hw*0.10,hh*0.22],[-hw*0.10,-hh*0.22],[hw*0.20,0]];
+  const TP=[];
+  for (let i=0;i<3;i++){ const q={x:0,y:0,z:0,s:1,ok:false}; pt(o,U,V,tri[i][0],tri[i][1],q,dep,N); TP.push(q); }
+  if (TP.every(q=>q.ok)){
+    ctx.beginPath();
+    ctx.moveTo(TP[0].x,TP[0].y); ctx.lineTo(TP[1].x,TP[1].y); ctx.lineTo(TP[2].x,TP[2].y); ctx.closePath();
+    ctx.fillStyle = colA(o.col, (0.72+hot*0.28)*a); ctx.fill();
+  }
+
+  // label, upright, physically proportional — exactly like a folder
+  const lowest = Math.max(LP[1].y, LP[3].y, F[3].y, F[2].y);
+  const sz = Math.max(0.5, 12.6*P0.s);
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  setFont(sz, 500, '0.16em');
+  ctx.fillStyle = 'rgba(255,255,255,'+((0.74+hot*0.26)*a).toFixed(3)+')';
+  ctx.fillText(o.data.title, P0.x, lowest + 20*P0.s);
+}
+
+function drawSheet(o){
+  const [U,V,N] = basis(o);
+  const hw = W<700 ? 76 : 92, hh = W<700 ? 60 : 62, fd = W<700 ? 14 : 18;
+  const c = [[-hw,-hh],[hw,-hh],[hw,hh-fd],[hw-fd,hh],[-hw,hh]];
+  let ok = true;
+  for (let i=0;i<5;i++){ pt(o,U,V,c[i][0],c[i][1],PT[i],0,N); if(!PT[i].ok) ok=false; }
+  if (!ok){ o.vis=false; return; }
+  pt(o,U,V,0,0,P0,0,N);
+  o.cx=P0.x; o.cy=P0.y; o.ps=P0.s; o.vis=true;
+  o.polys = [[[PT[0].x,PT[0].y],[PT[1].x,PT[1].y],[PT[2].x,PT[2].y],[PT[3].x,PT[3].y],[PT[4].x,PT[4].y]]];
+
+  const a=o.a, hot=o.hot;
+  strokePoly(PT,5);
+  ctx.fillStyle = 'rgba(1,3,8,'+((0.72+hot*0.16)*a).toFixed(3)+')';
+  ctx.fill();
+
+  // a photo fills the card; the frame is drawn over it
+  if (o.data.img){
+    const r = imgFor(o.data.img);
+    if (r.ready){
+      // map the TRUE rectangle of the card, not the folded-corner outline —
+      // otherwise the picture comes out sheared
+      const TL={x:0,y:0,z:0,s:1,ok:false}, TR={x:0,y:0,z:0,s:1,ok:false}, BL={x:0,y:0,z:0,s:1,ok:false};
+      pt(o,U,V,-hw, hh,TL,0,N); pt(o,U,V, hw, hh,TR,0,N); pt(o,U,V,-hw,-hh,BL,0,N);
+      if (TL.ok && TR.ok && BL.ok){
+        // and crop the source so the photo keeps its own proportions — never squashed
+        const iw = r.el.naturalWidth || r.el.width, ih = r.el.naturalHeight || r.el.height;
+        const cardA = hw/hh, imgA = iw/ih;
+        let sx=0, sy=0, sw=iw, sh=ih;
+        if (imgA > cardA){ sw = ih*cardA; sx = (iw-sw)/2; }
+        else             { sh = iw/cardA; sy = (ih-sh)/2; }
+        ctx.save();
+        strokePoly(PT,5); ctx.clip();
+        ctx.globalAlpha = a*(0.72 + hot*0.28);
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+        ctx.transform(TR.x-TL.x, TR.y-TL.y, BL.x-TL.x, BL.y-TL.y, TL.x, TL.y);
+        ctx.drawImage(r.el, sx, sy, sw, sh, 0, 0, 1, 1);
+        ctx.restore();
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+      }
+    }
+  }
+  ctx.strokeStyle = colA(o.col, (0.50+hot*0.50)*a);
+  ctx.lineWidth = (1 + hot*0.6) * Math.min(1.5, Math.max(0.7, P0.s*0.9));
+  ctx.stroke();
+
+  // the folded corner
+  pt(o,U,V,hw-fd,hh,PT[5],0,N); pt(o,U,V,hw-fd,hh-fd,PT[6],0,N); pt(o,U,V,hw,hh-fd,PT[7],0,N);
+  if (PT[5].ok && PT[6].ok && PT[7].ok){
+    ctx.beginPath();
+    ctx.moveTo(PT[5].x,PT[5].y); ctx.lineTo(PT[6].x,PT[6].y); ctx.lineTo(PT[7].x,PT[7].y);
+    ctx.strokeStyle = colA(o.col, (0.40+hot*0.5)*a);
+    ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  const d = o.data;
+  const small = W < 700;
+  const maxW  = hw*1.74*P0.s;
+  if (d.img){
+    setFont(10.5, 500, '0.10em');
+    const cl = wrap(d.title, hw*1.74, 2);          // measured in card units, so zoom cannot change it
+    const cs = Math.max(0.5, 10.5*P0.s);
+    setFont(cs, 500, '0.10em');
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    const ch2 = cl.length*cs*1.45 + 12*P0.s;
+    const bottom = Math.max(PT[0].y, PT[1].y);
+    ctx.save(); strokePoly(PT,5); ctx.clip();
+    ctx.fillStyle = 'rgba(0,1,4,'+(0.62*a).toFixed(3)+')';
+    ctx.fillRect(P0.x - hw*1.4*P0.s, bottom - ch2 - 6*P0.s, hw*2.8*P0.s, ch2 + 12*P0.s);
+    ctx.restore();
+    let cy = bottom - ch2;
+    ctx.fillStyle = 'rgba(255,255,255,'+((0.88+hot*0.12)*a).toFixed(3)+')';
+    cl.forEach(ln=>{ ctx.fillText(ln, P0.x, cy); cy += cs*1.45; });
+    ctx.textBaseline='middle';
+    if (hot > 0.05){
+      setFont(clamp(8.8*P0.s,1,90), 400, '0.24em');
+      ctx.fillStyle = 'rgba(255,255,255,'+(0.6*hot*a).toFixed(3)+')';
+      ctx.fillText('OPEN', P0.x, P0.y + (hh+18)*P0.s);
+    }
+    return;
+  }
+  ctx.textAlign='center'; ctx.textBaseline='top';
+
+  // The line breaks and the shrink factor are worked out ONCE, in the card's own
+  // units, and only then scaled to the screen. That way zooming changes nothing
+  // but the size — never where a word breaks, never whether the block still fits.
+  const bMaxW  = hw*1.74;                       // usable width, in card units
+  const bInner = hh*1.74;                       // usable height, in card units
+  let bs, bms, lines, bNeed, k = 1;
+  for (let pass=0; pass<8; pass++){
+    bs = 12.5*k; bms = 22*k;
+    setFont(bs, 500, '0.04em');
+    lines = wrap(d.title, bMaxW, 3);
+    bNeed = lines.length*bs*1.42 + (d.metric ? bs*0.72 + bms : 0);
+    if (bNeed <= bInner) break;
+    k *= 0.86;
+  }
+  const sz   = Math.max(0.5, bs*P0.s);
+  const ms   = Math.max(0.5, bms*P0.s);
+  const need = bNeed*P0.s;
+
+  let y = P0.y - need/2;
+  setFont(sz, 500, '0.04em');
+  ctx.fillStyle = 'rgba(255,255,255,'+((0.90+hot*0.10)*a).toFixed(3)+')';
+  lines.forEach(ln=>{ ctx.fillText(ln, P0.x, y); y += sz*1.42; });
+
+  if (d.metric){
+    y += sz*0.72;
+    setFont(ms, 700, '-0.02em', true);
+    ctx.fillStyle = colA(o.col, (0.92+hot*0.08)*a);
+    ctx.fillText(d.metric[0], P0.x, y);
+  }
+  ctx.textBaseline='middle';
+
+  if (hot > 0.05){
+    setFont(clamp(8.8*P0.s,1,90), 400, '0.24em');
+    ctx.fillStyle = 'rgba(255,255,255,'+(0.6*hot*a).toFixed(3)+')';
+    ctx.fillText('OPEN', P0.x, P0.y + (hh+18)*P0.s);
+  }
+}
+
+/* ---------------- images ---------------- */
+const IMGS = {};
+function imgFor(src){
+  let r = IMGS[src];
+  if (!r){
+    r = IMGS[src] = { el: new Image(), ready:false };
+    r.el.onload = ()=>{ r.ready = true; };
+    r.el.src = src;
+  }
+  return r;
+}
+
+/* ---------------- colour ---------------- */
+const _rgb = {};
+function colA(hex, a){
+  let c = _rgb[hex];
+  if (!c){
+    const h = hex.replace('#','');
+    c = [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+    _rgb[hex] = c;
+  }
+  return 'rgba('+c[0]+','+c[1]+','+c[2]+','+Math.max(0,Math.min(1,a)).toFixed(3)+')';
+}
+
+/* ---------------- text helpers ---------------- */
+let FMONO = "'JetBrains Mono', ui-monospace, monospace";
+let FSANS = "'Archivo', 'Helvetica Neue', system-ui, sans-serif";
+function setFont(px, weight, spacing, sans){
+  ctx.font = weight + ' ' + px.toFixed(1) + 'px ' + (sans ? FSANS : FMONO);
+  try { ctx.letterSpacing = spacing; } catch(e){}
+}
+function wrap(text, maxW, maxLines){
+  const words = text.split(' '), out = [];
+  let cur = '', i = 0;
+  for (; i<words.length; i++){
+    const t = cur ? cur+' '+words[i] : words[i];
+    if (ctx.measureText(t).width > maxW && cur){ out.push(cur); cur = words[i]; }
+    else cur = t;
+    if (out.length === maxLines){ cur = ''; break; }
+  }
+  if (cur) out.push(cur);
+  if (i < words.length - 1 && out.length){
+    out[out.length-1] = out[out.length-1].replace(/[,;·]?$/, '') + '…';
+  }
+  return out.slice(0, maxLines);
+}
+
+/* ---------------- pick ---------------- */
+function inPoly(poly, x, y){
+  let inside = false;
+  for (let i=0, j=poly.length-1; i<poly.length; j=i++){
+    const xi=poly[i][0], yi=poly[i][1], xj=poly[j][0], yj=poly[j][1];
+    if (((yi>y)!==(yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi)) inside = !inside;
+  }
+  return inside;
+}
+function pick(mx,my){
+  let best=null, bz=-1e9;
+  for (const o of visible){
+    if (!o.vis || o.a < 0.5 || !o.polys) continue;
+    let hit = false;
+    for (const p of o.polys) if (inPoly(p, mx, my)) { hit = true; break; }
+    if (hit && o.p.z > bz){ best=o; bz=o.p.z; }
+  }
+  return best;
+}
+
+/* ---------------- frame ---------------- */
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(0.05, (now-last)/1000); last = now;
+  time += dt;
+
+  if (!dragging){
+    // let the throw carry on, then settle
+    if (Math.abs(cam.vyaw) > 0.00004 || Math.abs(cam.vpitch) > 0.00004){
+      const ny = clamp(cam.gyaw + cam.vyaw*(dt*60), -YAWLIM, YAWLIM);
+      if (ny === cam.gyaw) cam.vyaw = 0;            // hit the edge — stop there
+      cam.gyaw = ny;
+      const np = clamp(cam.gpitch + cam.vpitch*(dt*60), -PITCHLIM, PITCHLIM);
+      if (np === cam.gpitch) cam.vpitch = 0;
+      cam.gpitch = np;
+      const decay = Math.pow(0.94, dt*60);
+      cam.vyaw *= decay; cam.vpitch *= decay;
+      cam.idle = 0;
+    } else {
+      cam.vyaw = 0; cam.vpitch = 0;
+    }
+  }
+  // pull back in proportion to the real tilt, so reading levels barely move
+  cam.gdist = fitDist * cam.zoom * (1 + 0.46*Math.abs(cam.gyaw) + 0.58*Math.abs(cam.gpitch));
+  updateCam(dt);
+
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.fillStyle = '#000206';
+  ctx.fillRect(0,0,W,H);
+
+  /* stars */
+  for (let i=0;i<STARS.length;i++){
+    const s = STARS[i];
+    project(s.x,s.y,s.z,P0);
+    if (!P0.ok || P0.x<-20||P0.x>W+20||P0.y<-20||P0.y>H+20) continue;
+    const tw = reduce ? 1 : 0.68+0.32*Math.sin(time*s.ts+s.tw);
+    ctx.fillStyle = 'rgba(255,255,255,'+(Math.min(1,s.m*0.8)*tw).toFixed(3)+')';
+    ctx.beginPath(); ctx.arc(P0.x,P0.y,Math.max(0.35,s.m*0.95),0,6.2832); ctx.fill();
+  }
+
+  /* objects, far to near */
+  const all = folderObjs.concat(sheetObjs, tvObjs);
+  for (const o of all){
+    const dl = o.delay || 0;
+    const goal = (o.ga && time - levelAt > dl) ? o.ga : (o.ga ? 0 : 0);
+    o.a  += (goal - o.a) * Math.min(1, dt*5.5);
+    o.sc += (o.gsc - o.sc) * Math.min(1, dt*5);
+    const target = (hover === o) ? 1 : 0;
+    o.hot += (target - o.hot) * Math.min(1, dt*11);
+    if (o.a < 0.01){ o.vis = false; }
+  }
+  const draw = all.filter(o=> o.a > 0.01)
+                  .map(o=>{ const dz = o.p.x*Fw.x+o.p.y*Fw.y+o.p.z*Fw.z; return {o, dz}; })
+                  .sort((a,b)=> b.dz - a.dz);
+  for (const d of draw){
+    if (d.o.kind === 'folder') drawFolder(d.o);
+    else if (d.o.kind === 'tv') drawTV(d.o);
+    else drawSheet(d.o);
+  }
+
+  requestAnimationFrame(frame);
+}
+let levelAt = 0;
+
+/* ---------------- input ---------------- */
+let dragging=false, lx=0, ly=0, moved=false;
+cv.addEventListener('pointerdown', e=>{
+  cv.setPointerCapture(e.pointerId);
+  dragging=true; moved=false; lx=e.clientX; ly=e.clientY;
+  cam.vyaw=0; cam.vpitch=0; cam.idle=0; cv.classList.add('drag');
+});
+cv.addEventListener('pointermove', e=>{
+  if (dragging){
+    const dx=e.clientX-lx, dy=e.clientY-ly;
+    if (Math.abs(dx)+Math.abs(dy) > 4) moved=true;
+    cam.gyaw    = clamp(cam.gyaw - dx*0.0042, -YAWLIM, YAWLIM);
+    cam.gpitch  = clamp(cam.gpitch + dy*0.0034, -PITCHLIM, PITCHLIM);
+    cam.vyaw   = -dx*0.0042; cam.vpitch = dy*0.0034;
+    lx=e.clientX; ly=e.clientY; cam.idle=0;
+  } else {
+    const h = pick(e.clientX, e.clientY);
+    if (h !== hover){ hover = h; cv.classList.toggle('point', !!h); }
+  }
+});
+function up(e){
+  if (!dragging) return;
+  dragging=false; cv.classList.remove('drag');
+  if (moved) return;
+  const h = pick(e.clientX, e.clientY);
+  if (h){
+    if (h.kind === 'folder') API.openFolder(h.data.id);
+    else if (h.kind === 'tv') API.openTV();
+    else API.openItem(h.data.id);
+  } else if (state === 'folder'){
+    API.back();
+  }
+}
+cv.addEventListener('pointerup', up);
+cv.addEventListener('pointercancel', ()=>{ dragging=false; cv.classList.remove('drag'); });
+cv.addEventListener('pointerleave', ()=>{ if(!dragging){ hover=null; cv.classList.remove('point'); } });
+cv.addEventListener('wheel', e=>{
+  e.preventDefault(); cam.idle = 0;
+  cam.zoom = clamp(cam.zoom * (1 + Math.sign(e.deltaY)*0.09), 0.55, 1.9);
+}, {passive:false});
+
+/* ---------------- resize ---------------- */
+function resize(){
+  W = innerWidth; H = innerHeight;
+  // render at the screen's real density — a phone is 3x, and drawing at 2x and
+  // letting the browser upscale is exactly what made the lines look soft.
+  // capped by total pixels, not by ratio, so a big tablet cannot melt.
+  DPR = devicePixelRatio || 1;
+  const MAXPX = 6.2e6;
+  if (W*H*DPR*DPR > MAXPX) DPR = Math.sqrt(MAXPX/(W*H));
+  DPR = Math.max(1, Math.min(3, DPR));
+  cv.width = Math.floor(W*DPR); cv.height = Math.floor(H*DPR);
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+  CX = W/2;
+  // centre the objects in the gap BETWEEN the header and the bottom row of
+  // buttons, instead of nudging the whole scene down by a guessed fraction
+  if (state === 'root'){
+    const t = document.getElementById('title');
+    const top = t ? Math.min(H*0.42, t.getBoundingClientRect().bottom + (W<860 ? 18 : 26)) : H*0.22;
+    const bot = H - (W<860 ? 74 : 86);
+    CY = (top + bot)/2;
+  } else {
+    CY = H/2;
+  }
+  FOCAL = Math.max(520, Math.min(W,H)*1.12);
+  if (visible.length && visible[0].kind === 'folder') layoutRoot(visible);
+  else if (visible.length) layoutSheets(visible);
+  cam.gdist = fitDist;
+}
+addEventListener('resize', resize);
+
+/* ---------------- api ---------------- */
+const API = {
+  state: ()=> state,
+  openFolder(){}, openItem(){}, openTV(){}, back(){},   // wired by the UI
+  goRoot(){ levelAt = time; setLevel(null); resize(); },
+  goFolder(id){ levelAt = time; setLevel(id); resize(); },
+  folderOf: id => (ITEMS.find(i=>i.id===id)||{}).f,
+  parentOf: id => (fById[id]||{}).parent || null,
+  folderMeta: id => fById[id] || null,
+  currentFolder: ()=> openFolder,
+  clearHover(){ hover = null; cv.classList.remove('point'); }
+};
+window.SPACE = API;
+
+resize();
+levelAt = 0;
+setLevel(null);
+folderObjs.forEach((o,i)=>{ o.a = 0; o.delay = 0.25 + i*0.11; });
+cam.dist = fitDist*2.1;
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{});
+requestAnimationFrame(frame);
+}
+
+/* ===================== UI ===================== */
+function BOOT_UI(){
+'use strict';
+const S = window.SPACE;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const EXT = '<svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+
+/* ---------- level state ---------- */
+const byId = {}; ITEMS.forEach(i=> byId[i.id]=i);
+const folderById = {};
+FOLDERS.forEach(f=>{ folderById[f.id]=f; (f.subs||[]).forEach(s=>{ s.parent=f.id; s.color=f.color; folderById[s.id]=s; }); });
+
+let path = [];           // [] = root, ['travel'], ['travel','t2025']
+let openId = null;
+const level = ()=> path.length ? path[path.length-1] : null;
+
+function setCrumb(){
+  document.body.classList.toggle('deep', path.length > 0);
+  if (path.length){
+    $('#crumb .cur').innerHTML = path.map((id,i)=>
+      i === path.length-1
+        ? '<span>'+esc(folderById[id].name)+'</span>'
+        : '<button data-up="'+i+'">'+esc(folderById[id].name)+'</button>'
+    ).join(' <span class="sep">/</span> ');
+    $('#crumb .cur').querySelectorAll('[data-up]').forEach(b=>{
+      b.addEventListener('click', ()=> goPath(path.slice(0, +b.dataset.up + 1)));
+    });
+  }
+}
+
+function goPath(next){
+  path = next; closeWin(); if (typeof closeTV === 'function') closeTV();
+  path.length ? S.goFolder(level()) : S.goRoot();
+  setCrumb();
+  history.replaceState(null,'', path.length ? '#'+level() : ' ');
+  // a folder that holds exactly one file opens straight into that file
+  if (path.length){
+    const f = folderById[level()];
+    const solo = ITEMS.filter(i=> i.f === level());
+    if (f && !(f.subs && f.subs.length) && solo.length === 1){
+      const only = solo[0].id;
+      setTimeout(()=>{ if (level() === f.id && !openId) openWin(only); }, 560);
+    }
+  }
+}
+function goRoot(){ goPath([]); }
+function goUp(){ goPath(path.slice(0,-1)); }
+function goFolder(id){
+  const f = folderById[id]; if (!f) return;
+  goPath(f.parent ? [f.parent, id] : [id]);
+}
+function pathTo(id){
+  const f = folderById[id];
+  return f ? (f.parent ? [f.parent, id] : [id]) : [];
+}
+
+S.openFolder = goFolder;
+S.openItem   = openWin;
+S.back       = goUp;
+$('#back').addEventListener('click', goUp);
+
+/* ---------- the window ---------- */
+const win = $('#win'), body = $('#winBody');
+
+function openWin(id){
+  const d = byId[id]; if (!d) return;
+  if (level() !== d.f) { path = pathTo(d.f); S.goFolder(d.f); setCrumb(); }
+  openId = id;
+  const fol = folderById[d.f];
+  $('#winName').textContent = fol.name + '  /  ' + d.title;
+  win.style.setProperty('--accent', fol.color || '#ffffff');
+
+  let h = '';
+  if (d.img) h += '<figure class="shot"><img src="'+d.img+'" alt="'+esc(d.alt||d.title)+'" loading="lazy"></figure>';
+  h += '<h2>'+esc(d.title)+'</h2>';
+  if (d.role) h += '<div class="role">'+esc(d.role)+'</div>';
+  if (d.metric) h += '<div class="big"><b>'+esc(d.metric[0])+'</b>'+(d.metric[1]?'<span>'+esc(d.metric[1])+'</span>':'')+'</div>';
+  h += (d.body||'').split('\n\n').filter(Boolean).map(p=>'<p>'+esc(p)+'</p>').join('');
+  if (d.did && d.did.length){
+    h += '<h3>'+esc(d.didTitle || t('whatIDid'))+'</h3><ul>'+d.did.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  }
+  if (d.extra && d.extra.body){
+    h += '<h3>'+esc(d.extra.title||'More')+'</h3>'
+       + d.extra.body.split('\n\n').filter(Boolean).map(p=>'<p class="ex">'+esc(p)+'</p>').join('');
+  }
+  if (d.quote){
+    h += '<blockquote><div class="t">&ldquo;'+esc(d.quote.t)+'&rdquo;</div>'
+       + (d.quote.a ? '<div class="a">— '+esc(d.quote.a)+'</div>' : '') + '</blockquote>';
+  }
+  if (d.links && d.links.length){
+    h += '<h3>'+esc(t('links'))+'</h3><div class="links">'+d.links
+      .map(l=>'<a href="'+l.u+'" target="_blank" rel="noopener"><span>'+esc(l.t)+'</span>'+EXT+'</a>').join('')+'</div>';
+  }
+  if (d.tags && d.tags.length){
+    h += '<div class="tags">'+d.tags.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>';
+  }
+  body.innerHTML = h;
+  body.scrollTop = 0;
+
+  const sibs = ITEMS.filter(i=> i.f === d.f);
+  const idx = sibs.findIndex(i=> i.id === id);
+  $('#winNav .pos').textContent = (idx+1) + ' / ' + sibs.length;
+  $('#winNav').style.display = sibs.length > 1 ? '' : 'none';
+
+  document.body.classList.add('window');
+  win.setAttribute('aria-hidden','false');
+  history.replaceState(null,'','#'+id);
+  S.clearHover();
+  win.focus({preventScroll:true});
+}
+
+function closeWin(){
+  if (!openId) return;
+  openId = null;
+  document.body.classList.remove('window');
+  win.setAttribute('aria-hidden','true');
+  history.replaceState(null,'', path.length ? '#'+level() : ' ');
+}
+
+function step(dir){
+  if (!openId) return;
+  const d = byId[openId];
+  const sibs = ITEMS.filter(i=> i.f === d.f);
+  const idx = sibs.findIndex(i=> i.id === openId);
+  openWin(sibs[(idx + dir + sibs.length) % sibs.length].id);
+}
+
+$('#winClose').addEventListener('click', closeWin);
+$('#veil').addEventListener('click', closeWin);
+$('#winPrev').addEventListener('click', ()=> step(-1));
+$('#winNext').addEventListener('click', ()=> step(1));
+
+document.addEventListener('keydown', e=>{
+  if (document.body.classList.contains('tv')){
+    if (e.key === 'Escape'){ closeTV(); return; }
+    if (e.key === ' ' || e.key === 'k'){ e.preventDefault(); toggle(); return; }
+    if (e.key === 'ArrowRight'){ e.preventDefault(); seekBy(10); return; }
+    if (e.key === 'ArrowLeft'){  e.preventDefault(); seekBy(-10); return; }
+    if (e.key === 'ArrowDown' || e.key === 'n'){ e.preventDefault(); playVideo(tvIdx+1); return; }
+    if (e.key === 'ArrowUp'   || e.key === 'p'){ e.preventDefault(); playVideo(tvIdx-1); return; }
+    if (e.key === 'm'){ $('#tvMute').click(); return; }
+    return;
+  }
+  if (e.key === 'Escape'){ openId ? closeWin() : (path.length && goUp()); }
+  if (!openId) return;
+  if (e.key === 'ArrowRight'){ e.preventDefault(); step(1); }
+  if (e.key === 'ArrowLeft'){  e.preventDefault(); step(-1); }
+});
+
+/* ---------- language ---------- */
+function paintUI(){
+  $('#back').lastChild.textContent = t('back');
+  $('#say').textContent = t('sayHello');
+  $('#winPrev').textContent = '\u2190 ' + t('prev');
+  $('#winNext').textContent = t('next') + ' \u2192';
+  $('#langnow').textContent = (LANGS.find(l=> l.id === LANG) || LANGS[0]).short;
+  $('#tvnoteText').textContent = t('tvNote');
+  $('#tvopen').textContent = t('tvOpen') + ' \u2197';
+  $('#tvclose').setAttribute('aria-label', t('close'));
+  $('#tvPrev').setAttribute('aria-label', t('prevVideo'));
+  $('#tvNext').setAttribute('aria-label', t('nextVideo'));
+  $('#tvedgePrev').setAttribute('aria-label', t('prevVideo'));
+  $('#tvedgeNext').setAttribute('aria-label', t('nextVideo'));
+  $('#tvBack10').setAttribute('aria-label', t('back10'));
+  $('#tvFwd10').setAttribute('aria-label', t('fwd10'));
+  $('#langbtn').setAttribute('aria-label', t('language'));
+  $('#langmenu').innerHTML = LANGS.map(l=>
+    '<button role="menuitem" data-l="'+l.id+'" aria-current="'+(l.id===LANG)+'">'
+    + '<span class="k">'+l.short+'</span><span>'+esc(l.name)+'</span></button>').join('');
+  $('#langmenu').querySelectorAll('button').forEach(b=>
+    b.addEventListener('click', ()=>{ chooseLang(b.dataset.l); }));
+}
+
+function chooseLang(id){
+  if (id === LANG) { closeLangMenu(); return; }
+  setLang(id);
+  paintUI();
+  setCrumb();
+  syncPlayerLabels();
+  if (openId) openWin(openId);        // redraw the open window in the new language
+  closeLangMenu();
+}
+function openLangMenu(){ $('#langmenu').hidden = false; $('#langbtn').setAttribute('aria-expanded','true'); }
+function closeLangMenu(){ $('#langmenu').hidden = true; $('#langbtn').setAttribute('aria-expanded','false'); }
+$('#langbtn').addEventListener('click', e=>{
+  e.stopPropagation();
+  $('#langmenu').hidden ? openLangMenu() : closeLangMenu();
+});
+document.addEventListener('click', e=>{
+  if (!$('#langwrap').contains(e.target)) closeLangMenu();
+});
+
+/* ---------- the television ---------- */
+const tvWrap = $('#tvwrap'), tvBox = $('#tvbox'), tvScreen = $('#tvscreen');
+let tvIdx = 0, tvTimer = 0, tvVid = null, tvHide = 0, tvMuted = false;
+
+const mmss = s => {
+  if (!isFinite(s) || s < 0) s = 0;
+  const m = Math.floor(s/60), x = Math.floor(s%60);
+  return m + ':' + String(x).padStart(2,'0');
+};
+
+function showUI(){
+  document.body.classList.add('tvui');
+  clearTimeout(tvHide);
+  tvHide = setTimeout(()=>{
+    if (tvVid && !tvVid.paused) document.body.classList.remove('tvui');
+  }, 2800);
+}
+
+function syncPlayerLabels(){
+  $('#tvname').textContent = t('allVideos');
+  const v = VIDEOS[tvIdx];
+  if (v && v.who) $('#tvname').textContent = t('allVideos') + '  /  ' + v.who;
+  $('#tvcount').textContent = (tvIdx+1) + ' / ' + VIDEOS.length;
+}
+
+function setPlayIcon(paused){
+  $('#tvIconPlay').hidden = !paused;
+  $('#tvIconPause').hidden = paused;
+  $('#tvPlay').setAttribute('aria-label', paused ? t('play') : t('pause'));
+  document.body.classList.toggle('tvpaused', !!paused);
+}
+
+function playVideo(i){
+  tvIdx = (i + VIDEOS.length) % VIDEOS.length;
+  const v = VIDEOS[tvIdx];
+  document.body.classList.remove('tvblocked');
+  clearTimeout(tvTimer);
+  stopMedia();
+
+  if (v.file){
+    document.body.classList.remove('tvembed');
+    const el = document.createElement('video');
+    el.setAttribute('playsinline','');
+    el.setAttribute('preload','metadata');
+    el.muted = tvMuted;
+    if (v.poster) el.poster = v.poster;
+    el.src = v.file;
+    tvVid = el;
+
+    el.addEventListener('loadedmetadata', paintTime);
+    el.addEventListener('timeupdate', paintTime);
+    el.addEventListener('progress', paintTime);
+    el.addEventListener('play',  ()=>{ setPlayIcon(false); showUI(); });
+    el.addEventListener('pause', ()=>{ setPlayIcon(true); showUI(); });
+    el.addEventListener('ended', ()=> playVideo(tvIdx+1));
+
+    tvScreen.appendChild(el);
+    setPlayIcon(true);
+    el.play().catch(()=>{});          // a browser may refuse until the user taps
+    $('#tvopen').href = v.u || v.file;
+  } else {
+    // an embed we do not own: no timeline, no play button, just the picture
+    document.body.classList.add('tvembed');
+    const fr = document.createElement('iframe');
+    fr.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
+    fr.setAttribute('allowfullscreen','');
+    fr.setAttribute('referrerpolicy','origin-when-cross-origin');
+    fr.setAttribute('scrolling','no');
+    fr.title = v.t || '';
+    let loaded = false;
+    fr.addEventListener('load', ()=>{ loaded = true; });
+    fr.src = v.e;
+    tvScreen.appendChild(fr);
+    tvTimer = setTimeout(()=>{ if (!loaded) document.body.classList.add('tvblocked'); }, 3200);
+    $('#tvopen').href = v.u;
+  }
+  paintTime();
+  syncPlayerLabels();
+  showUI();
+}
+
+function stopMedia(){
+  tvScreen.querySelectorAll('iframe,video').forEach(n=>{
+    if (n.tagName === 'VIDEO'){ try{ n.pause(); }catch(e){} n.removeAttribute('src'); n.load(); }
+    n.remove();
+  });
+  tvVid = null;
+}
+
+function paintTime(){
+  const v = tvVid;
+  const dur = v && isFinite(v.duration) ? v.duration : 0;
+  const cur = v ? v.currentTime : 0;
+  $('#tvcur').textContent = mmss(cur);
+  $('#tvdur').textContent = mmss(dur);
+  const pct = dur ? (cur/dur)*100 : 0;
+  $('#tvfill').style.width = pct + '%';
+  $('#tvknob').style.left  = pct + '%';
+  let buf = 0;
+  if (v && v.buffered && v.buffered.length) { try{ buf = v.buffered.end(v.buffered.length-1); }catch(e){} }
+  $('#tvbuf').style.width = (dur ? (buf/dur)*100 : 0) + '%';
+}
+
+function toggle(){
+  if (!tvVid) return;
+  tvVid.paused ? tvVid.play().catch(()=>{}) : tvVid.pause();
+  showUI();
+}
+function seekBy(sec){
+  if (!tvVid) return;
+  const dur = isFinite(tvVid.duration) && tvVid.duration > 0 ? tvVid.duration : Infinity;
+  tvVid.currentTime = Math.max(0, Math.min(dur - 0.05, tvVid.currentTime + sec));
+  showUI();
+}
+
+/* ---------- the timeline, draggable ---------- */
+(function scrub(){
+  const line = $('#tvline'), track = $('#tvtrack');
+  let dragging = false;
+  const at = x =>{
+    const r = track.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (x - r.left) / (r.width || 1)));
+  };
+  const put = x =>{
+    if (!tvVid || !isFinite(tvVid.duration)) return;
+    tvVid.currentTime = at(x) * tvVid.duration;
+    paintTime();
+  };
+  line.addEventListener('pointerdown', e=>{
+    if (!tvVid) return;
+    dragging = true; line.classList.add('drag');
+    line.setPointerCapture(e.pointerId); put(e.clientX); showUI();
+  });
+  line.addEventListener('pointermove', e=>{ if (dragging) put(e.clientX); });
+  const stop = ()=>{ dragging = false; line.classList.remove('drag'); };
+  line.addEventListener('pointerup', stop);
+  line.addEventListener('pointercancel', stop);
+})();
+
+/* ---------- swipe to change video, tap to play ---------- */
+(function swipe(){
+  const stage = $('#tvstage');
+  let sx=0, sy=0, st=0, on=false;
+  stage.addEventListener('pointerdown', e=>{ on=true; sx=e.clientX; sy=e.clientY; st=Date.now(); });
+  stage.addEventListener('pointerup', e=>{
+    if (!on) return; on=false;
+    const dx = e.clientX-sx, dy = e.clientY-sy, dt = Date.now()-st;
+    if (Math.abs(dy) > 55 && Math.abs(dy) > Math.abs(dx)*1.2){ playVideo(tvIdx + (dy < 0 ? 1 : -1)); return; }
+    if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy)*1.2){ playVideo(tvIdx + (dx < 0 ? 1 : -1)); return; }
+    if (dt < 400 && Math.abs(dx) < 12 && Math.abs(dy) < 12){
+      if (document.body.classList.contains('tvui') || !tvVid || tvVid.paused) toggle(); else showUI();
+    }
+  });
+  stage.addEventListener('pointercancel', ()=>{ on=false; });
+  stage.addEventListener('pointermove', ()=>{ if (!on) showUI(); });
+})();
+
+function openTV(){
+  if (!path.length || level() !== 'social'){ path = ['social']; S.goFolder('social'); setCrumb(); }
+  closeWin();
+  document.body.classList.add('tv');
+  tvWrap.setAttribute('aria-hidden','false');
+  playVideo(tvIdx);
+  S.clearHover();
+  tvBox.focus({preventScroll:true});
+}
+function closeTV(){
+  if (!document.body.classList.contains('tv')) return;
+  document.body.classList.remove('tv','tvblocked','tvembed','tvui','tvpaused');
+  tvWrap.setAttribute('aria-hidden','true');
+  clearTimeout(tvTimer); clearTimeout(tvHide);
+  stopMedia();
+}
+S.openTV = openTV;
+
+$('#tvclose').addEventListener('click', closeTV);
+$('#tvPlay').addEventListener('click', toggle);
+$('#tvtap').addEventListener('click', toggle);
+$('#tvBack10').addEventListener('click', ()=> seekBy(-10));
+$('#tvFwd10').addEventListener('click', ()=> seekBy(10));
+$('#tvPrev').addEventListener('click', ()=> playVideo(tvIdx-1));
+$('#tvNext').addEventListener('click', ()=> playVideo(tvIdx+1));
+$('#tvedgePrev').addEventListener('click', ()=> playVideo(tvIdx-1));
+$('#tvedgeNext').addEventListener('click', ()=> playVideo(tvIdx+1));
+$('#tvMute').addEventListener('click', ()=>{
+  tvMuted = !tvMuted;
+  if (tvVid) tvVid.muted = tvMuted;
+  $('#tvIconLoud').hidden = tvMuted;
+  $('#tvIconMute').hidden = !tvMuted;
+  $('#tvMute').setAttribute('aria-label', tvMuted ? t('unmute') : t('mute'));
+  showUI();
+});
+
+/* ---------- deep links ---------- *//* ---------- deep links ---------- */
+(function start(){
+  paintUI();
+  setCrumb();
+  const h = (location.hash||'').replace('#','');
+  if (byId[h]) setTimeout(()=> openWin(h), 700);
+  else if (folderById[h]) setTimeout(()=> goFolder(h), 500);
+})();
+}
+
+/* ===================== MEDIA + BOOT =====================
+   Photos and videos are not baked into this file. They live next to it,
+   listed in media.json, so you can add or swap them without touching the code.
+
+   media.json:
+   {
+     "photos": [ { "file": "img/photo-01.jpg", "caption": "…", "where": "…" } ],
+     "videos": [ { "file": "video/video-01.mp4", "poster": "video/video-01.jpg",
+                   "title": "…", "who": "…" } ]
+   }
+   Missing file, empty lists or no server — the page simply falls back to what
+   is written in the data above, so it never breaks.
+*/
+function applyMedia(m){
+  if (!m || typeof m !== 'object') return;
+
+  /* ---- photos ---- */
+  const ph = Array.isArray(m.photos) ? m.photos.filter(p=> p && p.file) : [];
+  if (ph.length){
+    for (let i = ITEMS.length-1; i >= 0; i--) if (ITEMS[i].f === 'photos') ITEMS.splice(i,1);
+    ph.forEach((p,i)=>{
+      ITEMS.push({
+        f:'photos',
+        id:'photo-' + String(i+1).padStart(2,'0'),
+        title: p.caption || ('PHOTO ' + (i+1)),
+        role: p.where || '',
+        body: p.text || '',
+        img: p.file,
+        alt: p.caption || 'Photo'
+      });
+    });
+  }
+
+  /* ---- videos ---- */
+  const vd = Array.isArray(m.videos) ? m.videos.filter(v=> v && (v.file || v.e)) : [];
+  if (vd.length){
+    VIDEOS.length = 0;
+    vd.forEach((v,i)=> VIDEOS.push({
+      t: v.title || ('Video ' + (i+1)),
+      who: v.who || '',
+      file: v.file || '',
+      poster: v.poster || '',
+      u: v.u || v.file || '',
+      e: v.e || ''
+    }));
+  }
+}
+
+(async function boot(){
+  try{
+    const r = await fetch('media.json', { cache:'no-store' });
+    if (r.ok) applyMedia(await r.json());
+  }catch(e){ /* no media.json — run with what is in the file */ }
+  BOOT_SPACE();
+  BOOT_UI();
+})();
+
+</script>
+</body>
+</html>
