@@ -1629,7 +1629,7 @@ function layoutRoot(list){
       const row = Math.floor(i/cols), col = i%cols;
       const rowCount = Math.min(cols, n - row*cols);
       o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
-      o.yaw = (col ? -1 : 1) * 0.13; o.pitch = 0.05; o.roll = (col ? -1 : 1) * 0.015;
+      o.yaw = (col ? -1 : 1) * 0.08; o.pitch = 0.025; o.roll = (col ? -1 : 1) * 0.006;
     });
   }
   // cap how large a folder may get, so a level with only two of them stays calm
@@ -1683,15 +1683,16 @@ function basis(o){
   // a file is a billboard — it always squarely faces the viewer, so its text
   // is never skewed, never rotated and never overlaps its neighbour
   if (o.kind === 'sheet' || o.kind === 'tv') return [Rt, Up, v3(-Fw.x,-Fw.y,-Fw.z)];
+  const mobileFolder = W < 860 && o.kind === 'folder';
   const sw = reduce ? 0 : Math.sin(time*0.13 + o.phase);
   const sw2 = reduce ? 0 : Math.sin(time*0.097 + o.phase*1.7);
-  const yaw   = (o.yaw||0)   + sw*0.19;
-  const pitch = (o.pitch||0) + sw2*0.10;
+  const yaw   = (o.yaw||0)   + sw*(mobileFolder ? 0.055 : 0.19);
+  const pitch = (o.pitch||0) + sw2*(mobileFolder ? 0.025 : 0.10);
   const cp = Math.cos(pitch), sp = Math.sin(pitch);
   const N = nrm(v3(Math.sin(yaw)*cp, sp, Math.cos(yaw)*cp));
   let U = nrm(cross(v3(0,1,0), N));
   let V = nrm(cross(N, U));
-  const r = o.roll + (reduce ? 0 : sw2*0.03), c = Math.cos(r), s = Math.sin(r);
+  const r = o.roll + (reduce ? 0 : sw2*(mobileFolder ? 0.008 : 0.03)), c = Math.cos(r), s = Math.sin(r);
   return [ v3(U.x*c+V.x*s, U.y*c+V.y*s, U.z*c+V.z*s),
            v3(V.x*c-U.x*s, V.y*c-U.y*s, V.z*c-U.z*s),
            N ];
@@ -1817,16 +1818,17 @@ function drawFolder(o){
 
   // label, upright in screen space, below the deepest point
   const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
-  const sz = clamp(15.2*P0.s, 1, 130);
-  let yBase = lowest + 22*P0.s;
+  const sz = clamp((small ? 16.6 : 15.2)*P0.s, 1, 130);
+  const labelX = small ? Math.round(P0.x) : P0.x;
+  let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
   ctx.textAlign='center'; ctx.textBaseline='top';
   setFont(sz, 500, '0.16em');
   ctx.fillStyle = 'rgba(255,255,255,'+((0.96+hot*0.04)*a).toFixed(3)+')';
-  wrap(o.data.name, hw*(small ? 3.1 : 2.3)*P0.s, 2).forEach(ln=>{ ctx.fillText(ln, P0.x, yBase); yBase += sz*1.55; });
-  setFont(clamp(11.4*P0.s, 1, 110), 500, '0.18em');
+  wrap(o.data.name, hw*(small ? 3.1 : 2.3)*P0.s, 2).forEach(ln=>{ ctx.fillText(ln, labelX, yBase); yBase += sz*1.55; });
+  setFont(clamp((small ? 12.2 : 11.4)*P0.s, 1, 110), 500, '0.18em');
   ctx.fillStyle = tone(o.col, 0.42, (0.95+hot*0.05)*a);
   const nItems = countOf(o.data.id);
-  ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), P0.x, yBase + sz*0.3);
+  ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), labelX, small ? Math.round(yBase + sz*0.3) : yBase + sz*0.3);
   if (hot > 0.03 && W >= 860 && o.data.proof){
     setFont(clamp(9.5*P0.s, 1, 100), 400, '0.06em');
     ctx.fillStyle = 'rgba(255,255,255,'+(0.85*hot*a).toFixed(3)+')';
