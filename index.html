@@ -17,9 +17,9 @@
   color-scheme: dark;
   --bg:#000206;
   --ink:#ffffff;
-  --dim:#9aa2ad;
-  --faint:#5a626d;
-  --line:rgba(255,255,255,.16);
+  --dim:#c3cad4;
+  --faint:#8b93a0;
+  --line:rgba(255,255,255,.30);
   --hair:rgba(255,255,255,.08);
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   --sans:'Archivo','Helvetica Neue',system-ui,-apple-system,sans-serif;
@@ -58,7 +58,7 @@ body.deep #title{opacity:0;transform:translateY(-12px)}
   pointer-events:auto;
 }
 #social a{
-  display:grid;place-items:center;width:34px;height:34px;color:#fff;opacity:.72;
+  display:grid;place-items:center;width:34px;height:34px;color:#fff;opacity:.95;
   transition:opacity .2s, transform .2s;
 }
 #social a:hover{opacity:1;transform:translateY(-2px)}
@@ -483,26 +483,26 @@ const PERSON = {
 };
 
 const FOLDERS = [
-  { id:'social', name:'VIDEO & MEDIA', color:'#3D8BFF',
+  { id:'social', name:'VIDEO & MEDIA', color:'#5BA8FF',
     sub:'Client accounts, content, camera work',
     proof:'' },
-  { id:'own',    name:'PROJECTS', color:'#FF9A2E',
+  { id:'own',    name:'PROJECTS', color:'#FFA742',
     sub:'',
     proof:'' },
-  { id:'travel', name:'TRAVEL', color:'#22DD84',
+  { id:'travel', name:'TRAVEL', color:'#34E89E',
     sub:'Where the work and the year actually happened',
     proof:'I love adventures',
     subs:[
       { id:'t2025', name:'2025', proof:'One adventure every month' },
       { id:'t2026', name:'2026', proof:'' }
     ] },
-  { id:'photos', name:'PHOTOS', color:'#B36BFF',
+  { id:'photos', name:'PHOTOS', color:'#C08CFF',
     sub:'',
     proof:'' },
-  { id:'gear',   name:'GEAR', color:'#18D2E8',
+  { id:'gear',   name:'GEAR', color:'#35DEF0',
     sub:'',
     proof:'' },
-  { id:'about',  name:'ABOUT & CONTACT', color:'#FFC42E',
+  { id:'about',  name:'ABOUT & CONTACT', color:'#FFD149',
     sub:'Who is behind this, and how to reach him',
     proof:'Replies within a day' }
 ];
@@ -1623,7 +1623,7 @@ function layoutRoot(list){
   }
   // cap how large a folder may get, so a level with only two of them stays calm
   const fhw = W>=860 ? 106 : 62;
-  const maxPx = W>=860 ? 300 : W*0.44;
+  const maxPx = W>=860 ? 360 : W*0.44;
   // the second number is the vertical half-extent of one cell INCLUDING its
   // label, so the outer rows never get pushed off the screen
   const labelAllow = W>=860 ? 184 : (H < 660 ? 102 : 132);
@@ -1770,48 +1770,55 @@ function drawFolder(o){
   const lw = Math.min(1.9, Math.max(0.75, P0.s*1.1));
   ctx.lineJoin = 'round';
 
-  // back
+  // back panel — the same colour, pushed down, so the depth reads without a hole
   ctx.beginPath();
   ctx.moveTo(B[0].x,B[0].y);
   for (let i=1;i<B.length;i++) ctx.lineTo(B[i].x,B[i].y);
   ctx.closePath();
-  ctx.fillStyle = 'rgba(1,3,8,'+(0.82*a).toFixed(3)+')';
+  const gBack = ctx.createLinearGradient(B[5].x, B[5].y, B[0].x, B[0].y);
+  gBack.addColorStop(0, tone(o.col, -0.34, a));
+  gBack.addColorStop(1, tone(o.col, -0.56, a));
+  ctx.fillStyle = gBack;
   ctx.fill();
-  ctx.strokeStyle = colA(o.col, (0.52 + hot*0.40)*a);
+  ctx.strokeStyle = tone(o.col, 0.30 + hot*0.35, (0.9 + hot*0.1)*a);
   ctx.lineWidth = lw; ctx.stroke();
 
   // the spine, joining front to back at the bottom corners
   ctx.beginPath();
   ctx.moveTo(B[0].x,B[0].y); ctx.lineTo(F[0].x,F[0].y);
   ctx.moveTo(B[1].x,B[1].y); ctx.lineTo(F[1].x,F[1].y);
-  ctx.strokeStyle = colA(o.col, (0.42+hot*0.4)*a);
+  ctx.strokeStyle = tone(o.col, 0.10+hot*0.3, (0.8+hot*0.2)*a);
   ctx.lineWidth = lw*0.85; ctx.stroke();
 
-  // front
+  // front panel — filled solid in the folder's own colour
   ctx.beginPath();
   ctx.moveTo(F[0].x,F[0].y);
   for (let i=1;i<4;i++) ctx.lineTo(F[i].x,F[i].y);
   ctx.closePath();
-  ctx.fillStyle = 'rgba(2,5,11,'+((0.90+hot*0.06)*a).toFixed(3)+')';
+  const gFront = ctx.createLinearGradient((F[2].x+F[3].x)/2, (F[2].y+F[3].y)/2,
+                                          (F[0].x+F[1].x)/2, (F[0].y+F[1].y)/2);
+  gFront.addColorStop(0, tone(o.col, 0.20 + hot*0.16, a));
+  gFront.addColorStop(1, tone(o.col, -0.16 + hot*0.10, a));
+  ctx.fillStyle = gFront;
   ctx.fill();
-  ctx.strokeStyle = colA(o.col, (0.88 + hot*0.12)*a);
-  ctx.lineWidth = lw*1.05; ctx.stroke();
+  ctx.strokeStyle = tone(o.col, 0.52 + hot*0.30, (0.95 + hot*0.05)*a);
+  ctx.lineWidth = lw*1.15; ctx.stroke();
 
   // label, upright in screen space, below the deepest point
   const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
-  const sz = clamp(13.6*P0.s, 1, 120);
+  const sz = clamp(15.2*P0.s, 1, 130);
   let yBase = lowest + 22*P0.s;
   ctx.textAlign='center'; ctx.textBaseline='top';
   setFont(sz, 500, '0.16em');
-  ctx.fillStyle = 'rgba(255,255,255,'+((0.74+hot*0.26)*a).toFixed(3)+')';
+  ctx.fillStyle = 'rgba(255,255,255,'+((0.96+hot*0.04)*a).toFixed(3)+')';
   wrap(o.data.name, hw*(small ? 3.1 : 2.3)*P0.s, 2).forEach(ln=>{ ctx.fillText(ln, P0.x, yBase); yBase += sz*1.55; });
-  setFont(clamp(10.6*P0.s, 1, 100), 400, '0.18em');
-  ctx.fillStyle = colA(o.col, (0.44+hot*0.4)*a);
+  setFont(clamp(11.4*P0.s, 1, 110), 500, '0.18em');
+  ctx.fillStyle = tone(o.col, 0.42, (0.95+hot*0.05)*a);
   const nItems = countOf(o.data.id);
   ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), P0.x, yBase + sz*0.3);
   if (hot > 0.03 && W >= 860 && o.data.proof){
     setFont(clamp(9.5*P0.s, 1, 100), 400, '0.06em');
-    ctx.fillStyle = 'rgba(255,255,255,'+(0.5*hot*a).toFixed(3)+')';
+    ctx.fillStyle = 'rgba(255,255,255,'+(0.85*hot*a).toFixed(3)+')';
     ctx.fillText(o.data.proof, P0.x, yBase + sz*1.85);
   }
 }
@@ -1843,12 +1850,12 @@ function drawTV(o){
   // the body, seen slightly from the side
   ctx.beginPath();
   ctx.moveTo(B[0].x,B[0].y); for (let i=1;i<4;i++) ctx.lineTo(B[i].x,B[i].y); ctx.closePath();
-  ctx.fillStyle = 'rgba(1,3,8,'+(0.82*a).toFixed(3)+')';
+  ctx.fillStyle = tone(o.col, -0.70, 0.96*a);
   ctx.fill();
-  ctx.strokeStyle = colA(o.col, (0.34+hot*0.3)*a); ctx.lineWidth = lw*0.8; ctx.stroke();
+  ctx.strokeStyle = tone(o.col, 0.20+hot*0.3, (0.85+hot*0.15)*a); ctx.lineWidth = lw*0.9; ctx.stroke();
   ctx.beginPath();
   for (let i=0;i<4;i++){ ctx.moveTo(B[i].x,B[i].y); ctx.lineTo(F[i].x,F[i].y); }
-  ctx.strokeStyle = colA(o.col, (0.30+hot*0.3)*a); ctx.lineWidth = lw*0.7; ctx.stroke();
+  ctx.strokeStyle = tone(o.col, 0.18+hot*0.3, (0.8+hot*0.2)*a); ctx.lineWidth = lw*0.8; ctx.stroke();
 
   // aerial
   const T1={x:0,y:0,z:0,s:1,ok:false}, T2={x:0,y:0,z:0,s:1,ok:false}, T0={x:0,y:0,z:0,s:1,ok:false};
@@ -1858,10 +1865,10 @@ function drawTV(o){
   if (T0.ok && T1.ok && T2.ok){
     ctx.beginPath();
     ctx.moveTo(T1.x,T1.y); ctx.lineTo(T0.x,T0.y); ctx.lineTo(T2.x,T2.y);
-    ctx.strokeStyle = colA(o.col, (0.55+hot*0.45)*a); ctx.lineWidth = lw*0.8; ctx.stroke();
+    ctx.strokeStyle = tone(o.col, 0.45+hot*0.3, (0.95+hot*0.05)*a); ctx.lineWidth = lw*0.9; ctx.stroke();
     ctx.beginPath(); ctx.arc(T1.x,T1.y,Math.max(1.1,P0.s*2.2),0,6.2832);
     ctx.arc(T2.x,T2.y,Math.max(1.1,P0.s*2.2),0,6.2832);
-    ctx.fillStyle = colA(o.col, (0.7+hot*0.3)*a); ctx.fill();
+    ctx.fillStyle = tone(o.col, 0.45, (0.95+hot*0.05)*a); ctx.fill();
   }
 
   // legs
@@ -1872,15 +1879,18 @@ function drawTV(o){
     ctx.beginPath();
     ctx.moveTo(LP[0].x,LP[0].y); ctx.lineTo(LP[1].x,LP[1].y);
     ctx.moveTo(LP[2].x,LP[2].y); ctx.lineTo(LP[3].x,LP[3].y);
-    ctx.strokeStyle = colA(o.col, (0.5+hot*0.4)*a); ctx.lineWidth = lw*1.1; ctx.stroke();
+    ctx.strokeStyle = tone(o.col, 0.40+hot*0.3, (0.95+hot*0.05)*a); ctx.lineWidth = lw*1.2; ctx.stroke();
   }
 
   // the front frame
   ctx.beginPath();
   ctx.moveTo(F[0].x,F[0].y); for (let i=1;i<4;i++) ctx.lineTo(F[i].x,F[i].y); ctx.closePath();
-  ctx.fillStyle = 'rgba(2,5,11,'+((0.90+hot*0.05)*a).toFixed(3)+')';
+  const gTv = ctx.createLinearGradient((F[2].x+F[3].x)/2,(F[2].y+F[3].y)/2,(F[0].x+F[1].x)/2,(F[0].y+F[1].y)/2);
+  gTv.addColorStop(0, tone(o.col, -0.52 + hot*0.12, 0.97*a));
+  gTv.addColorStop(1, tone(o.col, -0.68 + hot*0.10, 0.97*a));
+  ctx.fillStyle = gTv;
   ctx.fill();
-  ctx.strokeStyle = colA(o.col, (0.9+hot*0.1)*a); ctx.lineWidth = lw*1.15; ctx.stroke();
+  ctx.strokeStyle = tone(o.col, 0.50+hot*0.3, (0.97+hot*0.03)*a); ctx.lineWidth = lw*1.25; ctx.stroke();
 
   // the screen
   const inset = 0.845, ih = 0.70;
@@ -1890,13 +1900,13 @@ function drawTV(o){
   if (SP.every(q=>q.ok)){
     ctx.beginPath();
     ctx.moveTo(SP[0].x,SP[0].y); for (let i=1;i<4;i++) ctx.lineTo(SP[i].x,SP[i].y); ctx.closePath();
-    ctx.fillStyle = colA(o.col, (0.055 + hot*0.075)*a);
+    ctx.fillStyle = 'rgba(2,6,13,'+(0.85*a).toFixed(3)+')';
     ctx.fill();
-    ctx.strokeStyle = colA(o.col, (0.4+hot*0.35)*a); ctx.lineWidth = lw*0.7; ctx.stroke();
+    ctx.strokeStyle = tone(o.col, 0.32+hot*0.3, (0.8+hot*0.2)*a); ctx.lineWidth = lw*0.8; ctx.stroke();
     // scan lines
     ctx.save(); ctx.beginPath();
     ctx.moveTo(SP[0].x,SP[0].y); for (let i=1;i<4;i++) ctx.lineTo(SP[i].x,SP[i].y); ctx.closePath(); ctx.clip();
-    ctx.strokeStyle = colA(o.col, 0.10*a); ctx.lineWidth = Math.max(0.5, P0.s*0.7);
+    ctx.strokeStyle = tone(o.col, 0.2, 0.22*a); ctx.lineWidth = Math.max(0.5, P0.s*0.7);
     for (let k=-6;k<=6;k++){
       const y = hh*ih*(k/6.5);
       const p1={x:0,y:0,z:0,s:1,ok:false}, p2={x:0,y:0,z:0,s:1,ok:false};
@@ -1913,7 +1923,7 @@ function drawTV(o){
   if (TP.every(q=>q.ok)){
     ctx.beginPath();
     ctx.moveTo(TP[0].x,TP[0].y); ctx.lineTo(TP[1].x,TP[1].y); ctx.lineTo(TP[2].x,TP[2].y); ctx.closePath();
-    ctx.fillStyle = colA(o.col, (0.72+hot*0.28)*a); ctx.fill();
+    ctx.fillStyle = tone(o.col, 0.40, (0.99)*a); ctx.fill();
   }
 
   // label, upright, physically proportional — exactly like a folder
@@ -1921,7 +1931,7 @@ function drawTV(o){
   const sz = Math.max(0.5, 12.6*P0.s);
   ctx.textAlign='center'; ctx.textBaseline='top';
   setFont(sz, 500, '0.16em');
-  ctx.fillStyle = 'rgba(255,255,255,'+((0.74+hot*0.26)*a).toFixed(3)+')';
+  ctx.fillStyle = 'rgba(255,255,255,'+((0.97+hot*0.03)*a).toFixed(3)+')';
   ctx.fillText(o.data.title, P0.x, lowest + 20*P0.s);
 }
 
@@ -1938,7 +1948,12 @@ function drawSheet(o){
 
   const a=o.a, hot=o.hot;
   strokePoly(PT,5);
-  ctx.fillStyle = 'rgba(1,3,8,'+((0.72+hot*0.16)*a).toFixed(3)+')';
+  // a card is paper, not a hole: a real tint of its folder's colour, dark
+  // enough that white text still sits cleanly on top
+  const gCard = ctx.createLinearGradient(PT[4].x, PT[4].y, PT[0].x, PT[0].y);
+  gCard.addColorStop(0, tone(o.col, -0.74 + hot*0.10, (0.96)*a));
+  gCard.addColorStop(1, tone(o.col, -0.86 + hot*0.08, (0.96)*a));
+  ctx.fillStyle = gCard;
   ctx.fill();
 
   // a photo fills the card; the frame is drawn over it
@@ -1967,8 +1982,8 @@ function drawSheet(o){
       }
     }
   }
-  ctx.strokeStyle = colA(o.col, (0.50+hot*0.50)*a);
-  ctx.lineWidth = (1 + hot*0.6) * Math.min(1.5, Math.max(0.7, P0.s*0.9));
+  ctx.strokeStyle = tone(o.col, 0.34+hot*0.3, (0.95+hot*0.05)*a);
+  ctx.lineWidth = (1.35 + hot*0.7) * Math.min(1.8, Math.max(0.9, P0.s*1.0));
   ctx.stroke();
 
   // the folded corner
@@ -1976,8 +1991,8 @@ function drawSheet(o){
   if (PT[5].ok && PT[6].ok && PT[7].ok){
     ctx.beginPath();
     ctx.moveTo(PT[5].x,PT[5].y); ctx.lineTo(PT[6].x,PT[6].y); ctx.lineTo(PT[7].x,PT[7].y);
-    ctx.strokeStyle = colA(o.col, (0.40+hot*0.5)*a);
-    ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = tone(o.col, 0.30+hot*0.4, (0.85+hot*0.15)*a);
+    ctx.lineWidth = Math.max(1, P0.s*0.9); ctx.stroke();
   }
 
   const d = o.data;
@@ -1996,12 +2011,12 @@ function drawSheet(o){
     ctx.fillRect(P0.x - hw*1.4*P0.s, bottom - ch2 - 6*P0.s, hw*2.8*P0.s, ch2 + 12*P0.s);
     ctx.restore();
     let cy = bottom - ch2;
-    ctx.fillStyle = 'rgba(255,255,255,'+((0.88+hot*0.12)*a).toFixed(3)+')';
+    ctx.fillStyle = 'rgba(255,255,255,'+((0.99)*a).toFixed(3)+')';
     cl.forEach(ln=>{ ctx.fillText(ln, P0.x, cy); cy += cs*1.45; });
     ctx.textBaseline='middle';
     if (hot > 0.05){
       setFont(clamp(8.8*P0.s,1,90), 400, '0.24em');
-      ctx.fillStyle = 'rgba(255,255,255,'+(0.6*hot*a).toFixed(3)+')';
+      ctx.fillStyle = 'rgba(255,255,255,'+(0.9*hot*a).toFixed(3)+')';
       ctx.fillText('OPEN', P0.x, P0.y + (hh+18)*P0.s);
     }
     return;
@@ -2028,13 +2043,13 @@ function drawSheet(o){
 
   let y = P0.y - need/2;
   setFont(sz, 500, '0.04em');
-  ctx.fillStyle = 'rgba(255,255,255,'+((0.90+hot*0.10)*a).toFixed(3)+')';
+  ctx.fillStyle = 'rgba(255,255,255,'+((0.99)*a).toFixed(3)+')';
   lines.forEach(ln=>{ ctx.fillText(ln, P0.x, y); y += sz*1.42; });
 
   if (d.metric){
     y += sz*0.72;
     setFont(ms, 700, '-0.02em', true);
-    ctx.fillStyle = colA(o.col, (0.92+hot*0.08)*a);
+    ctx.fillStyle = tone(o.col, 0.34, (0.99)*a);
     ctx.fillText(d.metric[0], P0.x, y);
   }
   ctx.textBaseline='middle';
@@ -2060,6 +2075,18 @@ function imgFor(src){
 
 /* ---------------- colour ---------------- */
 const _rgb = {};
+/* mix a hex toward white (k>0) or toward black (k<0) and return rgba() */
+function tone(hex, k, a){
+  let c = _rgb[hex];
+  if (!c){
+    const h = hex.replace('#','');
+    c = [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+    _rgb[hex] = c;
+  }
+  const f = v => k >= 0 ? Math.round(v + (255-v)*k) : Math.round(v*(1+k));
+  return 'rgba('+f(c[0])+','+f(c[1])+','+f(c[2])+','+Math.max(0,Math.min(1,a)).toFixed(3)+')';
+}
+
 function colA(hex, a){
   let c = _rgb[hex];
   if (!c){
