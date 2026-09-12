@@ -1629,7 +1629,7 @@ function layoutRoot(list){
       const row = Math.floor(i/cols), col = i%cols;
       const rowCount = Math.min(cols, n - row*cols);
       o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
-      o.yaw = (col ? -1 : 1) * 0.08; o.pitch = 0.025; o.roll = (col ? -1 : 1) * 0.006;
+      o.yaw = (col ? -1 : 1) * 0.035; o.pitch = 0.012; o.roll = (col ? -1 : 1) * 0.002;
     });
   }
   // cap how large a folder may get, so a level with only two of them stays calm
@@ -1686,13 +1686,13 @@ function basis(o){
   const mobileFolder = W < 860 && o.kind === 'folder';
   const sw = reduce ? 0 : Math.sin(time*0.13 + o.phase);
   const sw2 = reduce ? 0 : Math.sin(time*0.097 + o.phase*1.7);
-  const yaw   = (o.yaw||0)   + sw*(mobileFolder ? 0.055 : 0.19);
-  const pitch = (o.pitch||0) + sw2*(mobileFolder ? 0.025 : 0.10);
+  const yaw   = (o.yaw||0)   + sw*(mobileFolder ? 0.018 : 0.19);
+  const pitch = (o.pitch||0) + sw2*(mobileFolder ? 0.008 : 0.10);
   const cp = Math.cos(pitch), sp = Math.sin(pitch);
   const N = nrm(v3(Math.sin(yaw)*cp, sp, Math.cos(yaw)*cp));
   let U = nrm(cross(v3(0,1,0), N));
   let V = nrm(cross(N, U));
-  const r = o.roll + (reduce ? 0 : sw2*(mobileFolder ? 0.008 : 0.03)), c = Math.cos(r), s = Math.sin(r);
+  const r = o.roll + (reduce ? 0 : sw2*(mobileFolder ? 0.003 : 0.03)), c = Math.cos(r), s = Math.sin(r);
   return [ v3(U.x*c+V.x*s, U.y*c+V.y*s, U.z*c+V.z*s),
            v3(V.x*c-U.x*s, V.y*c-U.y*s, V.z*c-U.z*s),
            N ];
@@ -1700,7 +1700,7 @@ function basis(o){
 
 function pt(o, U, V, x, y, out, z, N){
   const k = o.sc;
-  const amp = (o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : 1;
+  const amp = (o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : (W < 860 && o.kind === 'folder') ? 0.22 : 1;
   const bobY = reduce ? 0 : Math.sin(time*0.26*o.bob + o.phase)*9*amp;
   const bobX = reduce ? 0 : Math.cos(time*0.19*o.bob + o.phase*1.3)*6*amp;
   const dz = z ? z*k : 0;
@@ -1818,14 +1818,14 @@ function drawFolder(o){
 
   // label, upright in screen space, below the deepest point
   const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
-  const sz = clamp((small ? 16.6 : 15.2)*P0.s, 1, 130);
+  const sz = clamp((small ? 18.4 : 15.2)*P0.s, 1, 130);
   const labelX = small ? Math.round(P0.x) : P0.x;
   let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
   ctx.textAlign='center'; ctx.textBaseline='top';
   setFont(sz, 500, '0.16em');
   ctx.fillStyle = 'rgba(255,255,255,'+((0.96+hot*0.04)*a).toFixed(3)+')';
   wrap(o.data.name, hw*(small ? 3.1 : 2.3)*P0.s, 2).forEach(ln=>{ ctx.fillText(ln, labelX, yBase); yBase += sz*1.55; });
-  setFont(clamp((small ? 12.2 : 11.4)*P0.s, 1, 110), 500, '0.18em');
+  setFont(clamp((small ? 13.4 : 11.4)*P0.s, 1, 110), 500, '0.18em');
   ctx.fillStyle = tone(o.col, 0.42, (0.95+hot*0.05)*a);
   const nItems = countOf(o.data.id);
   ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), labelX, small ? Math.round(yBase + sz*0.3) : yBase + sz*0.3);
