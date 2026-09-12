@@ -2163,7 +2163,8 @@ function frame(now){
   const nowDPR = devicePixelRatio || 1;
   const nowW = innerWidth;
   const nowH = Math.round((window.visualViewport && window.visualViewport.height) || innerHeight);
-  if (Math.abs(nowDPR - seenDPR) > 0.01 || nowW !== seenW || Math.abs(nowH - seenH) > 1) resize();
+  const nowScale = (window.visualViewport && visualViewport.scale) || 1;
+  if (Math.abs(nowDPR - seenDPR) > 0.01 || nowW !== seenW || Math.abs(nowH - seenH) > 1 || Math.abs(nowScale - seenScale) > 0.001) resize();
 
   if (!dragging){
     // let the throw carry on, then settle
@@ -2271,8 +2272,8 @@ cv.addEventListener('wheel', e=>{
    until something happens to trigger another resize. So instead of trusting one
    reading, the frame loop watches these three numbers and rebuilds the moment
    any of them turns out to have been wrong. */
-let seenDPR = 0, seenW = 0, seenH = 0;
-function resize(){
+let seenDPR = 0, seenW = 0, seenH = 0, seenScale = 0;
+function resize(forceDPR){
   // innerHeight on iOS Safari reports the layout viewport, which is TALLER than
   // what you can see — the address bar and toolbar sit on top of it. Everything
   // then gets centred against a screen that is ~100px bigger than reality, which
@@ -2287,7 +2288,7 @@ function resize(){
   // The old cap of 6.2M pixels did exactly that on a 16" laptop: 1728x1117 at
   // 2x is 7.7M, so it quietly rendered at 1.79x and everything looked soft —
   // until you zoomed to 110%, which shrank the viewport back under the cap.
-  const want = Math.min(devicePixelRatio || 1, 3);
+  const want = Math.min(forceDPR || devicePixelRatio || 1, 3);
   let d = want;
   const MAXPX = 20e6;
   if (W*H*d*d > MAXPX) d = Math.max(Math.min(want, 2), Math.sqrt(MAXPX/(W*H)));
@@ -2295,6 +2296,7 @@ function resize(){
   cv.width = Math.floor(W*DPR); cv.height = Math.floor(H*DPR);
   cv.style.width = W+'px'; cv.style.height = H+'px';
   seenDPR = devicePixelRatio || 1; seenW = W; seenH = H;
+  seenScale = (window.visualViewport && visualViewport.scale) || 1;
   CX = W/2;
   // centre the objects in the gap BETWEEN the header and the bottom row of
   // buttons, instead of nudging the whole scene down by a guessed fraction
@@ -2320,9 +2322,14 @@ addEventListener('orientationchange', ()=> setTimeout(resize, 120));
 // have to be worked out again once it actually arrives
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize).catch(()=>{});
 [60, 300, 900, 2000].forEach(ms=> setTimeout(resize, ms));
+// Arc/iOS can paint the first canvas softly at 100% page zoom and only sharpen
+// after a user-triggered zoom/resize. Give phone screens one forced high-density
+// rebuild immediately after first paint, even if width/height/DPR did not change.
+if (innerWidth < 860) requestAnimationFrame(()=> requestAnimationFrame(()=> resize(3)));
 if (window.visualViewport){
   visualViewport.addEventListener('resize', resize);
   visualViewport.addEventListener('scroll', resize);   // iOS shrinks it as you scroll
+  visualViewport.addEventListener('scrollend', resize);
 }
 
 /* ---------------- api ---------------- */
