@@ -2323,9 +2323,13 @@ addEventListener('orientationchange', ()=> setTimeout(resize, 120));
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize).catch(()=>{});
 [60, 300, 900, 2000].forEach(ms=> setTimeout(resize, ms));
 // Arc/iOS can paint the first canvas softly at 100% page zoom and only sharpen
-// after a user-triggered zoom/resize. Give phone screens one forced high-density
-// rebuild immediately after first paint, even if width/height/DPR did not change.
-if (innerWidth < 860) requestAnimationFrame(()=> requestAnimationFrame(()=> resize(3)));
+// after a user-triggered zoom/resize. Give phone screens several forced
+// high-density rebuilds while the browser chrome and effective zoom settle,
+// even if width/height/DPR did not change.
+if (innerWidth < 860){
+  requestAnimationFrame(()=> requestAnimationFrame(()=> resize(3)));
+  [120, 450, 1000, 1800, 3000, 5000].forEach(ms=> setTimeout(()=> resize(3), ms));
+}
 if (window.visualViewport){
   visualViewport.addEventListener('resize', resize);
   visualViewport.addEventListener('scroll', resize);   // iOS shrinks it as you scroll
