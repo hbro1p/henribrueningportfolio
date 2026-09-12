@@ -2279,13 +2279,17 @@ function resize(){
   W = innerWidth;
   H = Math.round((window.visualViewport && window.visualViewport.height) || innerHeight);
   document.documentElement.style.setProperty('--vvh', H + 'px');
-  // render at the screen's real density — a phone is 3x, and drawing at 2x and
-  // letting the browser upscale is exactly what made the lines look soft.
-  // capped by total pixels, not by ratio, so a big tablet cannot melt.
-  DPR = devicePixelRatio || 1;
-  const MAXPX = 6.2e6;
-  if (W*H*DPR*DPR > MAXPX) DPR = Math.sqrt(MAXPX/(W*H));
-  DPR = Math.max(1, Math.min(3, DPR));
+  // Render at the screen's real density. The cap exists only so a gigantic
+  // window cannot allocate an absurd canvas — and it must NEVER pull us below
+  // the screen's own ratio up to 2x, which is the baseline for a crisp line.
+  // The old cap of 6.2M pixels did exactly that on a 16" laptop: 1728x1117 at
+  // 2x is 7.7M, so it quietly rendered at 1.79x and everything looked soft —
+  // until you zoomed to 110%, which shrank the viewport back under the cap.
+  const want = Math.min(devicePixelRatio || 1, 3);
+  let d = want;
+  const MAXPX = 20e6;
+  if (W*H*d*d > MAXPX) d = Math.max(Math.min(want, 2), Math.sqrt(MAXPX/(W*H)));
+  DPR = Math.max(1, d);
   cv.width = Math.floor(W*DPR); cv.height = Math.floor(H*DPR);
   cv.style.width = W+'px'; cv.style.height = H+'px';
   seenDPR = devicePixelRatio || 1; seenW = W; seenH = H;
