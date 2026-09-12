@@ -43,6 +43,22 @@ a{color:inherit}
 #sky{position:fixed;inset:0;display:block;touch-action:none;cursor:grab}
 #sky.drag{cursor:grabbing}
 #sky.point{cursor:pointer}
+#folderLabels{position:fixed;inset:0;z-index:4;pointer-events:none}
+.folder-label{
+  position:absolute;left:0;top:0;transform:translate(-50%,0);
+  width:150px;text-align:center;text-transform:uppercase;
+  font-family:var(--mono);line-height:1.45;
+  text-rendering:geometricPrecision;-webkit-font-smoothing:antialiased;
+  opacity:0;will-change:transform,opacity;
+}
+.folder-label .name{
+  display:block;color:#fff;font-weight:500;letter-spacing:.16em;
+  text-wrap:balance;
+}
+.folder-label .count{
+  display:block;margin-top:5px;font-weight:500;letter-spacing:.18em;
+}
+@media (min-width:860px){#folderLabels{display:none}}
 
 /* ---------- title, only on the root level ---------- */
 #title{
@@ -371,6 +387,7 @@ body.tvembed #tvctl{display:none}
 </head>
 <body>
 <canvas id="sky"></canvas>
+<div id="folderLabels" aria-hidden="true"></div>
 
 <div id="title">
   <h1>HENRI BRÜNING</h1>
@@ -1485,6 +1502,7 @@ function BOOT_SPACE(){
 
 const cv  = document.getElementById('sky');
 const ctx = cv.getContext('2d', { alpha:false });
+const labelLayer = document.getElementById('folderLabels');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let W=0, H=0, DPR=1, CX=0, CY=0, FOCAL=900;
@@ -1821,13 +1839,27 @@ function drawFolder(o){
   const sz = clamp((small ? 18.4 : 15.2)*P0.s, 1, 130);
   const labelX = small ? Math.round(P0.x) : P0.x;
   let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
+  const nItems = countOf(o.data.id);
+  if (small){
+    o.mobileLabel = {
+      x: labelX,
+      y: yBase,
+      w: Math.max(104, hw*3.1*P0.s),
+      nameSize: Math.max(10, sz),
+      countSize: Math.max(8.5, 13.4*P0.s),
+      name: o.data.name,
+      count: nItems + ' ' + (nItems === 1 ? t('item') : t('items')),
+      color: o.col,
+      alpha: a
+    };
+    return;
+  }
   ctx.textAlign='center'; ctx.textBaseline='top';
   setFont(sz, 500, '0.16em');
   ctx.fillStyle = 'rgba(255,255,255,'+((0.96+hot*0.04)*a).toFixed(3)+')';
   wrap(o.data.name, hw*(small ? 3.1 : 2.3)*P0.s, 2).forEach(ln=>{ ctx.fillText(ln, labelX, yBase); yBase += sz*1.55; });
   setFont(clamp((small ? 13.4 : 11.4)*P0.s, 1, 110), 500, '0.18em');
   ctx.fillStyle = tone(o.col, 0.42, (0.95+hot*0.05)*a);
-  const nItems = countOf(o.data.id);
   ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), labelX, small ? Math.round(yBase + sz*0.3) : yBase + sz*0.3);
   if (hot > 0.03 && W >= 860 && o.data.proof){
     setFont(clamp(9.5*P0.s, 1, 100), 400, '0.06em');
@@ -2074,6 +2106,47 @@ function drawSheet(o){
   }
 }
 
+/* ---------------- crisp mobile folder labels ---------------- */
+const labelEls = new Map();
+function syncFolderLabels(){
+  if (!labelLayer) return;
+  if (W >= 860 || state !== 'root'){
+    labelLayer.replaceChildren();
+    labelEls.clear();
+    return;
+  }
+  const active = new Set();
+  for (const o of visible){
+    if (o.kind !== 'folder' || !o.mobileLabel || o.a < 0.02) continue;
+    const id = o.data.id;
+    active.add(id);
+    let el = labelEls.get(id);
+    if (!el){
+      el = document.createElement('div');
+      el.className = 'folder-label';
+      el.innerHTML = '<span class="name"></span><span class="count"></span>';
+      labelLayer.appendChild(el);
+      labelEls.set(id, el);
+    }
+    const m = o.mobileLabel;
+    const name = el.firstChild, count = el.lastChild;
+    if (name.textContent !== m.name) name.textContent = m.name;
+    if (count.textContent !== m.count) count.textContent = m.count;
+    el.style.transform = 'translate3d(' + Math.round(m.x) + 'px,' + Math.round(m.y) + 'px,0) translateX(-50%)';
+    el.style.width = Math.round(m.w) + 'px';
+    el.style.opacity = Math.max(0, Math.min(1, m.alpha)).toFixed(3);
+    name.style.fontSize = m.nameSize.toFixed(1) + 'px';
+    count.style.fontSize = m.countSize.toFixed(1) + 'px';
+    count.style.color = tone(m.color, 0.42, 1);
+  }
+  for (const [id, el] of labelEls){
+    if (!active.has(id)){
+      el.remove();
+      labelEls.delete(id);
+    }
+  }
+}
+
 /* ---------------- images ---------------- */
 const IMGS = {};
 function imgFor(src){
@@ -2218,6 +2291,7 @@ function frame(now){
     else if (d.o.kind === 'tv') drawTV(d.o);
     else drawSheet(d.o);
   }
+  syncFolderLabels();
 
   requestAnimationFrame(frame);
 }
