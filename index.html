@@ -11,7 +11,13 @@
 <title>Henri Brüning</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- The webfont must never hold up the first paint. A plain stylesheet link in
+     the head is render-blocking: on a slow mobile connection the whole page sits
+     empty until Google answers. Loaded as "print" it does not block, and the
+     onload swap applies it the moment it lands. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
 :root{
   color-scheme: dark;
@@ -1555,8 +1561,13 @@ FOLDERS.forEach(f=>{
 const folderObjs = ALLF.map(f => makeObj('folder', f));
 const fObjById = {}; folderObjs.forEach(o=> fObjById[o.data.id] = o);
 const fById = {}; ALLF.forEach(f=> fById[f.id] = f);
-const sheetObjs  = ITEMS.map(it => makeObj('sheet', it));
+let sheetObjs  = ITEMS.map(it => makeObj('sheet', it));
 sheetObjs.forEach(o=>{ const f = fById[o.data.f]; o.col = (f && f.color) || '#ffffff'; });
+/* ITEMS can grow later, when media.json lands after the first paint */
+function rebuildObjects(){
+  sheetObjs = ITEMS.map(it => makeObj('sheet', it));
+  sheetObjs.forEach(o=>{ const f = fById[o.data.f]; o.col = (f && f.color) || '#ffffff'; });
+}
 const tvObjs = (typeof TVS !== 'undefined' ? TVS : []).map(t => makeObj('tv', t));
 tvObjs.forEach(o=>{ const f = fById[o.data.f]; o.col = (f && f.color) || '#ffffff'; });
 folderObjs.forEach(o=>{ o.col = o.data.color || '#ffffff'; });
@@ -2146,6 +2157,12 @@ function frame(now){
   const dt = Math.min(0.05, (now-last)/1000); last = now;
   time += dt;
 
+  // did the screen turn out to be something other than what we measured?
+  const nowDPR = devicePixelRatio || 1;
+  const nowW = innerWidth;
+  const nowH = Math.round((window.visualViewport && window.visualViewport.height) || innerHeight);
+  if (Math.abs(nowDPR - seenDPR) > 0.01 || nowW !== seenW || Math.abs(nowH - seenH) > 1) resize();
+
   if (!dragging){
     // let the throw carry on, then settle
     if (Math.abs(cam.vyaw) > 0.00004 || Math.abs(cam.vpitch) > 0.00004){
@@ -2246,6 +2263,13 @@ cv.addEventListener('wheel', e=>{
 }, {passive:false});
 
 /* ---------------- resize ---------------- */
+/* What the canvas was last built for. A phone reports its real pixel density
+   and its real visible height only once the first paint and the toolbars have
+   settled; measure too early and the canvas keeps a small, soft backing store
+   until something happens to trigger another resize. So instead of trusting one
+   reading, the frame loop watches these three numbers and rebuilds the moment
+   any of them turns out to have been wrong. */
+let seenDPR = 0, seenW = 0, seenH = 0;
 function resize(){
   // innerHeight on iOS Safari reports the layout viewport, which is TALLER than
   // what you can see — the address bar and toolbar sit on top of it. Everything
@@ -2264,6 +2288,7 @@ function resize(){
   DPR = Math.max(1, Math.min(3, DPR));
   cv.width = Math.floor(W*DPR); cv.height = Math.floor(H*DPR);
   cv.style.width = W+'px'; cv.style.height = H+'px';
+  seenDPR = devicePixelRatio || 1; seenW = W; seenH = H;
   CX = W/2;
   // centre the objects in the gap BETWEEN the header and the bottom row of
   // buttons, instead of nudging the whole scene down by a guessed fraction
@@ -2283,7 +2308,12 @@ function resize(){
   cam.gdist = fitDist;
 }
 addEventListener('resize', resize);
+addEventListener('load', resize);
 addEventListener('orientationchange', ()=> setTimeout(resize, 120));
+// the webfont changes every text measurement, so line breaks and the camera fit
+// have to be worked out again once it actually arrives
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize).catch(()=>{});
+[60, 300, 900, 2000].forEach(ms=> setTimeout(resize, ms));
 if (window.visualViewport){
   visualViewport.addEventListener('resize', resize);
   visualViewport.addEventListener('scroll', resize);   // iOS shrinks it as you scroll
@@ -2299,7 +2329,8 @@ const API = {
   parentOf: id => (fById[id]||{}).parent || null,
   folderMeta: id => fById[id] || null,
   currentFolder: ()=> openFolder,
-  clearHover(){ hover = null; cv.classList.remove('point'); }
+  clearHover(){ hover = null; cv.classList.remove('point'); },
+  refresh(){ rebuildObjects(); levelAt = time; setLevel(openFolder); resize(); }
 };
 window.SPACE = API;
 
@@ -2308,7 +2339,6 @@ levelAt = 0;
 setLevel(null);
 folderObjs.forEach((o,i)=>{ o.a = 0; o.delay = 0.25 + i*0.11; });
 cam.dist = fitDist*2.1;
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{});
 requestAnimationFrame(frame);
 }
 
@@ -2757,12 +2787,30 @@ function applyMedia(m){
 }
 
 (async function boot(){
-  try{
-    const r = await fetch('media.json', { cache:'no-store' });
-    if (r.ok) applyMedia(await r.json());
-  }catch(e){ /* no media.json — run with what is in the file */ }
-  BOOT_SPACE();
-  BOOT_UI();
+  // The scene must never wait on the network. If media.json is slow, missing or
+  // behind a bad connection, the page still comes up immediately with what is
+  // written in this file, and the photos slot in when they arrive.
+  let booted = false;
+  const start = ()=>{ if (booted) return; booted = true; BOOT_SPACE(); BOOT_UI(); };
+
+  const media = (async()=>{
+    try{
+      const r = await fetch('media.json', { cache:'no-store' });
+      if (r.ok) return await r.json();
+    }catch(e){}
+    return null;
+  })();
+
+  const quick = await Promise.race([ media, new Promise(r=> setTimeout(()=> r('timeout'), 1200)) ]);
+  if (quick && quick !== 'timeout'){ applyMedia(quick); start(); return; }
+
+  start();                                  // up and running, no waiting
+  const late = await media;                 // ...and fold the photos in after
+  if (late){
+    applyMedia(late);
+    if (typeof applyLang === 'function') applyLang();
+    if (window.SPACE && SPACE.refresh) SPACE.refresh();
+  }
 })();
 
 </script>
