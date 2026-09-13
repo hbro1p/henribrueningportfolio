@@ -321,50 +321,6 @@ body.tvembed #tvctl{display:none}
   font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:0;text-align:center;pointer-events:none
 }
 
-/* ---------- one photograph, fullscreen ---------- */
-#pvwrap{position:fixed;left:0;right:0;top:0;height:var(--vvh,100%);z-index:32;
-  pointer-events:none;opacity:0;transition:opacity .3s ease}
-body.pv #pvwrap{pointer-events:auto;opacity:1}
-#pvbox{
-  position:absolute;inset:0;display:flex;flex-direction:column;background:#000206;
-  transform:scale(1.02);transition:transform .34s cubic-bezier(.16,1,.3,1);
-  padding-top:env(safe-area-inset-top)
-}
-body.pv #pvbox{transform:none}
-#pvbox:focus{outline:none}
-#pvtop{
-  flex:none;display:flex;align-items:center;gap:14px;padding:12px 16px;
-  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)
-}
-#pvclose{width:38px;height:38px;margin-left:-9px;display:grid;place-items:center;color:var(--dim);flex:none;transition:color .2s}
-#pvclose:hover{color:#fff}
-#pvclose svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round}
-#pvname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
-#pvcount{flex:none;font-variant-numeric:tabular-nums}
-#pvstage{
-  flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
-  padding:4px 10px;touch-action:pan-y;overflow:hidden
-}
-#pvimg{
-  max-width:100%;max-height:100%;width:auto;height:auto;display:block;
-  opacity:0;transition:opacity .25s ease;user-select:none;-webkit-user-drag:none
-}
-#pvimg.on{opacity:1}
-.pvedge{
-  position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;
-  display:grid;place-items:center;color:#fff;opacity:.8;transition:opacity .2s, background .2s;
-  background:rgba(0,2,6,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18)
-}
-#pvPrev{left:14px} #pvNext{right:14px}
-.pvedge:hover{background:rgba(0,2,6,.85);opacity:1}
-.pvedge svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-@media (hover:none){ .pvedge{display:none} }
-#pvfoot{
-  flex:none;min-height:34px;padding:6px 16px calc(14px + env(safe-area-inset-bottom));
-  display:flex;align-items:center;justify-content:center;text-align:center
-}
-#pvcap{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-
 /* ---------- the corner: language and contact ---------- */
 #corner{
   position:fixed;left:0;right:0;top:0;height:var(--vvh,100%);
@@ -524,28 +480,6 @@ body.pv #pvbox{transform:none}
       </div>
     </footer>
 
-  </section>
-</div>
-
-<div id="pvwrap" aria-hidden="true">
-  <section id="pvbox" role="dialog" aria-modal="true" tabindex="-1">
-    <header id="pvtop">
-      <button id="pvclose" aria-label="Close">
-        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <span id="pvname"></span>
-      <span id="pvcount"></span>
-    </header>
-    <div id="pvstage">
-      <img id="pvimg" alt="">
-      <button class="pvedge" id="pvPrev" aria-label="Previous photo">
-        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
-      </button>
-      <button class="pvedge" id="pvNext" aria-label="Next photo">
-        <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-    <footer id="pvfoot"><span id="pvcap"></span></footer>
   </section>
 </div>
 
@@ -1731,17 +1665,12 @@ function layoutSheets(list){
   const photos = list.length && list.every(o=> o.data && o.data.img);
 
   if (photos){
-    // A wall of pictures. Every cell is the same size and every picture is
-    // fitted INSIDE its cell at its own shape, so nothing can ever overlap
-    // however tall or wide the photo is.
-    // choose the column count from the shape of the SCREEN, so the wall fills it
-    // instead of leaving half the width empty
     const aspect = (W*0.91) / Math.max(1, H*0.82);
     let cols = Math.round(Math.sqrt(n * aspect));
     cols = clamp(cols, small ? 3 : 5, small ? 5 : 12);
     cols = Math.min(cols, n);
     const rows = Math.ceil(n/cols);
-    const cell = small ? 108 : 132;                 // half-size of one cell
+    const cell = small ? 108 : 132;
     const gap  = small ? 18 : 24;
     const cw = 2*cell + gap, ch = 2*cell + gap;
     list.forEach((o,i)=>{
@@ -1794,15 +1723,16 @@ function basis(o){
   // a file is a billboard — it always squarely faces the viewer, so its text
   // is never skewed, never rotated and never overlaps its neighbour
   if (o.kind === 'sheet' || o.kind === 'tv') return [Rt, Up, v3(-Fw.x,-Fw.y,-Fw.z)];
+  const mobileFolder = W < 860 && o.kind === 'folder';
   const sw = reduce ? 0 : Math.sin(time*0.13 + o.phase);
   const sw2 = reduce ? 0 : Math.sin(time*0.097 + o.phase*1.7);
-  const yaw   = (o.yaw||0)   + sw*0.19;
-  const pitch = (o.pitch||0) + sw2*0.10;
+  const yaw   = (o.yaw||0)   + sw*(mobileFolder ? 0.018 : 0.19);
+  const pitch = (o.pitch||0) + sw2*(mobileFolder ? 0.008 : 0.10);
   const cp = Math.cos(pitch), sp = Math.sin(pitch);
   const N = nrm(v3(Math.sin(yaw)*cp, sp, Math.cos(yaw)*cp));
   let U = nrm(cross(v3(0,1,0), N));
   let V = nrm(cross(N, U));
-  const r = o.roll + (reduce ? 0 : sw2*0.03), c = Math.cos(r), s = Math.sin(r);
+  const r = o.roll + (reduce ? 0 : sw2*(mobileFolder ? 0.003 : 0.03)), c = Math.cos(r), s = Math.sin(r);
   return [ v3(U.x*c+V.x*s, U.y*c+V.y*s, U.z*c+V.z*s),
            v3(V.x*c-U.x*s, V.y*c-U.y*s, V.z*c-U.z*s),
            N ];
@@ -1810,7 +1740,7 @@ function basis(o){
 
 function pt(o, U, V, x, y, out, z, N){
   const k = o.sc;
-  const amp = (o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : 1;
+  const amp = (o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : (W < 860 && o.kind === 'folder') ? 0.22 : 1;
   const bobY = reduce ? 0 : Math.sin(time*0.26*o.bob + o.phase)*9*amp;
   const bobX = reduce ? 0 : Math.cos(time*0.19*o.bob + o.phase*1.3)*6*amp;
   const dz = z ? z*k : 0;
@@ -1826,7 +1756,7 @@ const FOLDER_PATH = (hw,hh)=>[
 
 /* ---------------- state ---------------- */
 /* the root is a space you fly around; inside a folder you are reading, so it barely tilts */
-let YAWLIM = 1.15, PITCHLIM = 0.78, ZOOMIN = 0.55;
+let YAWLIM = 1.15, PITCHLIM = 0.78;
 let time = 0, state = 'root', openFolder = null, hover = null;
 let visible = [];
 
@@ -1842,10 +1772,8 @@ function setLevel(folderId){
   kids.forEach((o,i)=>{ o.ga=1; o.gsc=1; o.a=0; o.sc=0.8; o.delay = i*(asFolders?0.06:0.035); });
   visible = kids;
   const readingFiles = kids.length && kids[0].kind === 'sheet';
-  const wall = kids.length > 12 && kids.every(o=> o.data && o.data.img);
-  YAWLIM   = wall ? 0.62 : (readingFiles ? 0.26 : 1.15);
-  PITCHLIM = wall ? 0.42 : (readingFiles ? 0.17 : 0.78);
-  ZOOMIN   = wall ? 0.30 : 0.55;                  // how far you may push in
+  YAWLIM   = readingFiles ? 0.26 : 1.15;
+  PITCHLIM = readingFiles ? 0.17 : 0.78;
   cam.zoom = 1; cam.gdist = fitDist;
   cam.gyaw = 0; cam.gpitch = 0.05; cam.vyaw = 0; cam.vpitch = 0;
   hover = null;
@@ -2078,12 +2006,11 @@ function drawSheet(o){
   const [U,V,N] = basis(o);
   let hw, hh, fd;
   if (o.data.img && o.cell){
-    // fit the picture inside its cell, keeping its own proportions
     const ar = o.data.ar || (imgFor(o.data.img).ready ? (imgFor(o.data.img).el.naturalWidth /
                 Math.max(1, imgFor(o.data.img).el.naturalHeight)) : 1);
     hw = ar >= 1 ? o.cell : o.cell*ar;
     hh = ar >= 1 ? o.cell/ar : o.cell;
-    fd = 0;                                    // no folded corner on a photograph
+    fd = 0;
   } else {
     hw = W<700 ? 76 : 92; hh = W<700 ? 60 : 62; fd = W<700 ? 14 : 18;
   }
@@ -2119,8 +2046,6 @@ function drawSheet(o){
         const iw = r.el.naturalWidth || r.el.width, ih = r.el.naturalHeight || r.el.height;
         const cardA = hw/hh, imgA = iw/ih;
         let sx=0, sy=0, sw=iw, sh=ih;
-        // the card is already the picture's shape, so nothing is cropped; this
-        // only guards against a file whose real shape differs from media.json
         if (Math.abs(imgA - cardA) > 0.01){
           if (imgA > cardA){ sw = ih*cardA; sx = (iw-sw)/2; }
           else             { sh = iw/cardA; sy = (ih-sh)/2; }
@@ -2153,7 +2078,7 @@ function drawSheet(o){
   const small = W < 700;
   const maxW  = hw*1.74*P0.s;
   if (d.img){
-    if (!d.title){                                  // untitled photo: just the picture
+    if (!d.title){
       if (hot > 0.05){
         ctx.textAlign='center'; ctx.textBaseline='middle';
         setFont(Math.max(0.5, 8.8*P0.s), 400, '0.24em');
@@ -2472,34 +2397,8 @@ cv.addEventListener('pointercancel', ()=>{ dragging=false; cv.classList.remove('
 cv.addEventListener('pointerleave', ()=>{ if(!dragging){ hover=null; cv.classList.remove('point'); } });
 cv.addEventListener('wheel', e=>{
   e.preventDefault(); cam.idle = 0;
-  cam.zoom = clamp(cam.zoom * (1 + Math.sign(e.deltaY)*0.09), ZOOMIN, 1.9);
+  cam.zoom = clamp(cam.zoom * (1 + Math.sign(e.deltaY)*0.09), 0.55, 1.9);
 }, {passive:false});
-
-/* pinch to zoom — a wall of photographs is no use if you cannot get closer */
-(function pinch(){
-  const pts = new Map();
-  let base = 0, baseZoom = 1;
-  const dist = ()=>{
-    const a = [...pts.values()];
-    return a.length < 2 ? 0 : Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y);
-  };
-  cv.addEventListener('pointerdown', e=>{
-    pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
-    if (pts.size === 2){ base = dist(); baseZoom = cam.zoom; }
-  });
-  cv.addEventListener('pointermove', e=>{
-    if (!pts.has(e.pointerId)) return;
-    pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
-    if (pts.size === 2 && base > 0){
-      const d = dist();
-      if (d > 0){ cam.zoom = clamp(baseZoom * (base/d), ZOOMIN, 1.9); cam.idle = 0; }
-    }
-  });
-  const drop = e=>{ pts.delete(e.pointerId); if (pts.size < 2) base = 0; };
-  cv.addEventListener('pointerup', drop);
-  cv.addEventListener('pointercancel', drop);
-  cv.addEventListener('pointerleave', drop);
-})();
 
 /* ---------------- resize ---------------- */
 /* What the canvas was last built for. A phone reports its real pixel density
@@ -2543,7 +2442,7 @@ function resize(){
     bandHalf = (bot - top)/2;
   } else {
     CY = H/2;
-    bandHalf = H*0.455;
+    bandHalf = H*0.40;
   }
   FOCAL = Math.max(520, Math.min(W,H)*1.12);
   if (visible.length && visible[0].kind === 'folder') layoutRoot(visible);
@@ -2617,9 +2516,7 @@ function setCrumb(){
 }
 
 function goPath(next){
-  path = next; closeWin();
-  if (typeof closeTV === 'function') closeTV();
-  if (typeof closePhoto === 'function') closePhoto();
+  path = next; closeWin(); if (typeof closeTV === 'function') closeTV();
   path.length ? S.goFolder(level()) : S.goRoot();
   setCrumb();
   history.replaceState(null,'', path.length ? '#'+level() : ' ');
@@ -2654,8 +2551,6 @@ const win = $('#win'), body = $('#winBody');
 
 function openWin(id){
   const d = byId[id]; if (!d) return;
-  // a photograph belongs in the viewer, not in a window full of headings
-  if (d.f === 'photos' && d.img && openPhoto(id)) return;
   if (level() !== d.f) { path = pathTo(d.f); S.goFolder(d.f); setCrumb(); }
   openId = id;
   const fol = folderById[d.f];
@@ -2723,12 +2618,6 @@ $('#winPrev').addEventListener('click', ()=> step(-1));
 $('#winNext').addEventListener('click', ()=> step(1));
 
 document.addEventListener('keydown', e=>{
-  if (document.body.classList.contains('pv')){
-    if (e.key === 'Escape'){ closePhoto(); return; }
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){ e.preventDefault(); showPhoto(pvIdx+1); return; }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'){   e.preventDefault(); showPhoto(pvIdx-1); return; }
-    return;
-  }
   if (document.body.classList.contains('tv')){
     if (e.key === 'Escape'){ closeTV(); return; }
     if (e.key === ' ' || e.key === 'k'){ e.preventDefault(); toggle(); return; }
@@ -2787,69 +2676,6 @@ $('#langbtn').addEventListener('click', e=>{
 document.addEventListener('click', e=>{
   if (!$('#langwrap').contains(e.target)) closeLangMenu();
 });
-
-/* ---------- one photograph, fullscreen ---------- */
-const pvWrap = $('#pvwrap'), pvBox = $('#pvbox'), pvImg = $('#pvimg');
-let pvList = [], pvIdx = 0;
-
-function photoItems(){ return ITEMS.filter(i=> i.f === 'photos' && i.img); }
-
-function showPhoto(i){
-  if (!pvList.length) return;
-  pvIdx = (i + pvList.length) % pvList.length;
-  const d = pvList[pvIdx];
-  pvImg.classList.remove('on');
-  const done = ()=> pvImg.classList.add('on');
-  pvImg.onload = done;
-  pvImg.src = d.img;
-  if (pvImg.complete) done();
-  pvImg.alt = d.alt || d.title || 'Photo';
-  $('#pvcount').textContent = (pvIdx+1) + ' / ' + pvList.length;
-  $('#pvname').textContent = folderById.photos ? folderById.photos.name : '';
-  const cap = [d.title, d.role].filter(Boolean).join('  ·  ');
-  $('#pvcap').textContent = cap;
-  // keep the next one warm so paging feels instant
-  const nxt = pvList[(pvIdx+1) % pvList.length];
-  if (nxt && nxt.img){ const pre = new Image(); pre.src = nxt.img; }
-}
-
-function openPhoto(id){
-  pvList = photoItems();
-  const at = pvList.findIndex(p=> p.id === id);
-  if (at < 0) return false;
-  closeWin();
-  document.body.classList.add('pv');
-  pvWrap.setAttribute('aria-hidden','false');
-  showPhoto(at);
-  S.clearHover();
-  pvBox.focus({preventScroll:true});
-  return true;
-}
-function closePhoto(){
-  if (!document.body.classList.contains('pv')) return;
-  document.body.classList.remove('pv');
-  pvWrap.setAttribute('aria-hidden','true');
-  pvImg.classList.remove('on');
-  pvImg.removeAttribute('src');
-}
-$('#pvclose').addEventListener('click', closePhoto);
-$('#pvPrev').addEventListener('click', ()=> showPhoto(pvIdx-1));
-$('#pvNext').addEventListener('click', ()=> showPhoto(pvIdx+1));
-
-/* swipe through the photographs */
-(function pvSwipe(){
-  const st = $('#pvstage');
-  let sx=0, sy=0, t0=0, on=false;
-  st.addEventListener('pointerdown', e=>{ on=true; sx=e.clientX; sy=e.clientY; t0=Date.now(); });
-  st.addEventListener('pointerup', e=>{
-    if (!on) return; on=false;
-    const dx=e.clientX-sx, dy=e.clientY-sy;
-    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){ showPhoto(pvIdx + (dx<0 ? 1 : -1)); return; }
-    if (dy > 90 && Math.abs(dy) > Math.abs(dx)){ closePhoto(); return; }   // swipe down to close
-    if (Math.abs(dy) > 55 && Math.abs(dy) > Math.abs(dx)){ showPhoto(pvIdx + (dy<0 ? 1 : -1)); }
-  });
-  st.addEventListener('pointercancel', ()=>{ on=false; });
-})();
 
 /* ---------- the television ---------- */
 const tvWrap = $('#tvwrap'), tvBox = $('#tvbox'), tvScreen = $('#tvscreen');
@@ -3082,7 +2908,7 @@ function applyMedia(m){
         role: p.where || '',
         body: p.text || '',
         img: p.file,
-        ar: (p.w && p.h) ? p.w/p.h : 0,      // the picture's own shape
+        ar: (p.w && p.h) ? p.w/p.h : 0,
         alt: p.caption || 'Photo'
       });
     });
