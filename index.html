@@ -43,7 +43,7 @@ a{color:inherit}
 #sky{position:fixed;inset:0;display:block;touch-action:none;cursor:grab}
 #sky.drag{cursor:grabbing}
 #sky.point{cursor:pointer}
-#folderLabels{position:fixed;inset:0;z-index:4;pointer-events:none}
+#folderLabels{display:none}
 .folder-label{
   position:absolute;left:0;top:0;transform:translate(-50%,0);
   width:150px;text-align:center;text-transform:uppercase;
@@ -1865,7 +1865,7 @@ function strokePoly(pts, n){
 function drawFolder(o){
   const [U,V,N] = basis(o);
   const small = W < 860;
-  const hw = small ? 62 : 106, hh = small ? 48 : 76, dep = small ? 12 : 34;
+  const hw = small ? 76 : 106, hh = small ? 58 : 76, dep = small ? 10 : 34;
   const fh = hh * 0.70;                       // the front panel sits lower than the back
 
   // back panel, with the tab
@@ -1928,24 +1928,23 @@ function drawFolder(o){
   ctx.strokeStyle = tone(o.col, 0.52 + hot*0.30, (0.95 + hot*0.05)*a);
   ctx.lineWidth = lw*1.15; ctx.stroke();
 
-  // label, upright in screen space, below the deepest point
+  // label, upright in screen space
   const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
-  const sz = clamp((small ? 18.4 : 15.2)*P0.s, 1, 130);
+  const sz = clamp((small ? 15.2 : 15.2)*P0.s, 1, 130);
   const labelX = small ? Math.round(P0.x) : P0.x;
-  let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
+  let yBase = small ? Math.round(P0.y - 18*P0.s) : lowest + 22*P0.s;
   const nItems = countOf(o.data.id);
   if (small){
-    o.mobileLabel = {
-      x: labelX,
-      y: yBase,
-      w: Math.max(104, hw*3.1*P0.s),
-      nameSize: Math.max(10, sz),
-      countSize: Math.max(8.5, 13.4*P0.s),
-      name: o.data.name,
-      count: nItems + ' ' + (nItems === 1 ? t('item') : t('items')),
-      color: o.col,
-      alpha: a
-    };
+    o.mobileLabel = null;
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    const lines = wrap(o.data.name, hw*1.75*P0.s, 2);
+    if (lines.length > 1) yBase -= 9*P0.s;
+    setFont(sz, 600, '0.16em');
+    ctx.fillStyle = 'rgba(0,0,0,'+((0.78+hot*0.08)*a).toFixed(3)+')';
+    lines.forEach(ln=>{ ctx.fillText(ln, labelX, yBase); yBase += sz*1.35; });
+    setFont(clamp(12.4*P0.s, 1, 110), 500, '0.18em');
+    ctx.fillStyle = 'rgba(255,255,255,'+((0.92+hot*0.05)*a).toFixed(3)+')';
+    ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), labelX, yBase + sz*0.18);
     return;
   }
   ctx.textAlign='center'; ctx.textBaseline='top';
