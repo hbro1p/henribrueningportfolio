@@ -2267,12 +2267,31 @@ function syncFolderLabels(){
 
 /* ---------------- images ---------------- */
 const IMGS = {};
+const IMG_QUEUE = [];
+let IMG_ACTIVE = 0;
+const IMG_MAX_ACTIVE = 4;
+function pumpImages(){
+  while (IMG_ACTIVE < IMG_MAX_ACTIVE && IMG_QUEUE.length){
+    const r = IMG_QUEUE.shift();
+    if (r.loading || r.ready || r.failed) continue;
+    r.loading = true;
+    IMG_ACTIVE++;
+    r.el.onload = ()=>{
+      const done = ()=>{ r.ready = true; IMG_ACTIVE--; pumpImages(); };
+      if (r.el.decode) r.el.decode().then(done).catch(done);
+      else done();
+    };
+    r.el.onerror = ()=>{ r.failed = true; IMG_ACTIVE--; pumpImages(); };
+    r.el.src = r.src;
+  }
+}
 function imgFor(src){
   let r = IMGS[src];
   if (!r){
-    r = IMGS[src] = { el: new Image(), ready:false };
-    r.el.onload = ()=>{ r.ready = true; };
-    r.el.src = src;
+    r = IMGS[src] = { el: new Image(), src, ready:false, loading:false, failed:false };
+    r.el.decoding = 'async';
+    IMG_QUEUE.push(r);
+    pumpImages();
   }
   return r;
 }
