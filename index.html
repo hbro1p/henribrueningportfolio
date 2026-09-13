@@ -1708,7 +1708,7 @@ function layoutRoot(list){
     // depth, so they are all the same size and every label lands on the same
     // line — the tilt is what keeps them three-dimensional, not the distance.
     const short = H < 660;
-    const cols = 2, cw = 176, ch = short ? 212 : 246;
+    const cols = 2, cw = 204, ch = short ? 212 : 246;
     list.forEach((o,i)=>{
       const row = Math.floor(i/cols), col = i%cols;
       const rowCount = Math.min(cols, n - row*cols);
