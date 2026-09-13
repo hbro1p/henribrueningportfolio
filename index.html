@@ -1715,8 +1715,8 @@ function layoutRoot(list){
       o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
       o.yaw = (col ? -1 : 1) * 0.13; o.pitch = 0.05; o.roll = (col ? -1 : 1) * 0.015;
       o.fixedLabel = {
-        x: W/2 + (col - (rowCount-1)/2) * Math.min(168, W*0.36),
-        y: CY + ((Math.ceil(n/cols)-1)/2 - row) * Math.min(230, H*0.235) + 80
+        x: W/2 + (col - (rowCount-1)/2) * Math.min(150, W*0.32),
+        y: CY + ((Math.ceil(n/cols)-1)/2 - row) * Math.min(230, H*0.235) + 58
       };
     });
   }
@@ -1944,9 +1944,9 @@ function drawFolder(o){
       y: yBase,
       fixedX: o.fixedLabel ? o.fixedLabel.x : null,
       fixedY: o.fixedLabel ? o.fixedLabel.y : null,
-      w: Math.max(104, hw*3.1*P0.s),
-      nameSize: 18,
-      countSize: 13,
+      w: Math.min(138, Math.max(104, hw*2.45*P0.s)),
+      nameSize: Math.min(14.5, Math.max(11, 15.4*P0.s)),
+      countSize: Math.min(11, Math.max(9, 11.2*P0.s)),
       name: o.data.name,
       count: nItems + ' ' + (nItems === 1 ? t('item') : t('items')),
       color: o.col,
