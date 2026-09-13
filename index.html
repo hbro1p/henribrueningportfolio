@@ -1714,6 +1714,10 @@ function layoutRoot(list){
       const rowCount = Math.min(cols, n - row*cols);
       o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
       o.yaw = (col ? -1 : 1) * 0.13; o.pitch = 0.05; o.roll = (col ? -1 : 1) * 0.015;
+      o.fixedLabel = {
+        x: W/2 + (col - (rowCount-1)/2) * Math.min(168, W*0.36),
+        y: CY + ((Math.ceil(n/cols)-1)/2 - row) * Math.min(230, H*0.235) + 80
+      };
     });
   }
   // cap how large a folder may get, so a level with only two of them stays calm
@@ -1938,6 +1942,8 @@ function drawFolder(o){
     o.mobileLabel = {
       x: labelX,
       y: yBase,
+      fixedX: o.fixedLabel ? o.fixedLabel.x : null,
+      fixedY: o.fixedLabel ? o.fixedLabel.y : null,
       w: Math.max(104, hw*3.1*P0.s),
       nameSize: 18,
       countSize: 13,
@@ -2250,7 +2256,9 @@ function syncFolderLabels(){
     const name = el.firstChild, count = el.lastChild;
     if (name.textContent !== m.name) name.textContent = m.name;
     if (count.textContent !== m.count) count.textContent = m.count;
-    el.style.transform = 'translate3d(' + Math.round(m.x) + 'px,' + Math.round(m.y) + 'px,0) translateX(-50%)';
+    const x = m.fixedX == null ? m.x : m.fixedX;
+    const y = m.fixedY == null ? m.y : m.fixedY;
+    el.style.transform = 'translate3d(' + Math.round(x) + 'px,' + Math.round(y) + 'px,0) translateX(-50%)';
     el.style.width = Math.round(m.w) + 'px';
     el.style.opacity = Math.max(0, Math.min(1, m.alpha)).toFixed(3);
     name.style.fontSize = m.nameSize.toFixed(1) + 'px';
