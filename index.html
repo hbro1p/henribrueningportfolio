@@ -1708,7 +1708,7 @@ function layoutRoot(list){
     // depth, so they are all the same size and every label lands on the same
     // line — the tilt is what keeps them three-dimensional, not the distance.
     const short = H < 660;
-    const cols = 2, cw = 204, ch = short ? 212 : 246;
+    const cols = 2, cw = 228, ch = short ? 232 : 278;
     list.forEach((o,i)=>{
       const row = Math.floor(i/cols), col = i%cols;
       const rowCount = Math.min(cols, n - row*cols);
@@ -1932,7 +1932,7 @@ function drawFolder(o){
   const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
   const sz = clamp((small ? 18.4 : 15.2)*P0.s, 1, 130);
   const labelX = small ? Math.round(P0.x) : P0.x;
-  let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
+  let yBase = small ? Math.round(lowest + 14*P0.s) : lowest + 22*P0.s;
   const nItems = countOf(o.data.id);
   if (small){
     o.mobileLabel = {
