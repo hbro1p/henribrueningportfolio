@@ -43,7 +43,7 @@ a{color:inherit}
 #sky{position:fixed;inset:0;display:block;touch-action:none;cursor:grab}
 #sky.drag{cursor:grabbing}
 #sky.point{cursor:pointer}
-#folderLabels{display:none}
+#folderLabels{position:fixed;inset:0;z-index:4;pointer-events:none}
 .folder-label{
   position:absolute;left:0;top:0;transform:translate(-50%,0);
   width:150px;text-align:center;text-transform:uppercase;
@@ -1704,19 +1704,20 @@ function layoutRoot(list){
       });
     }
   } else {
-    // On a phone the folder label is engraved into the folder face. Keep the
-    // root folders nearly frontal so the text stays calm and readable.
+    // On a phone an even grid reads as a grid. Every folder sits at the SAME
+    // depth, so they are all the same size and every label lands on the same
+    // line — the tilt is what keeps them three-dimensional, not the distance.
     const short = H < 660;
     const cols = 2, cw = 176, ch = short ? 212 : 246;
     list.forEach((o,i)=>{
       const row = Math.floor(i/cols), col = i%cols;
       const rowCount = Math.min(cols, n - row*cols);
       o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
-      o.yaw = 0; o.pitch = 0.015; o.roll = 0;
+      o.yaw = (col ? -1 : 1) * 0.13; o.pitch = 0.05; o.roll = (col ? -1 : 1) * 0.015;
     });
   }
   // cap how large a folder may get, so a level with only two of them stays calm
-  const fhw = W>=860 ? 106 : 76;
+  const fhw = W>=860 ? 106 : 62;
   const maxPx = W>=860 ? 360 : W*0.44;
   // the second number is the vertical half-extent of one cell INCLUDING its
   // label, so the outer rows never get pushed off the screen
@@ -1793,9 +1794,8 @@ function basis(o){
   // a file is a billboard — it always squarely faces the viewer, so its text
   // is never skewed, never rotated and never overlaps its neighbour
   if (o.kind === 'sheet' || o.kind === 'tv') return [Rt, Up, v3(-Fw.x,-Fw.y,-Fw.z)];
-  const lockedMobileRoot = W < 860 && state === 'root';
-  const sw = (reduce || lockedMobileRoot) ? 0 : Math.sin(time*0.13 + o.phase);
-  const sw2 = (reduce || lockedMobileRoot) ? 0 : Math.sin(time*0.097 + o.phase*1.7);
+  const sw = reduce ? 0 : Math.sin(time*0.13 + o.phase);
+  const sw2 = reduce ? 0 : Math.sin(time*0.097 + o.phase*1.7);
   const yaw   = (o.yaw||0)   + sw*0.19;
   const pitch = (o.pitch||0) + sw2*0.10;
   const cp = Math.cos(pitch), sp = Math.sin(pitch);
@@ -1810,7 +1810,7 @@ function basis(o){
 
 function pt(o, U, V, x, y, out, z, N){
   const k = o.sc;
-  const amp = (W < 860 && state === 'root' && o.kind === 'folder') ? 0 : ((o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : 1);
+  const amp = (o.kind === 'sheet' || o.kind === 'tv') ? 0.42 : 1;
   const bobY = reduce ? 0 : Math.sin(time*0.26*o.bob + o.phase)*9*amp;
   const bobX = reduce ? 0 : Math.cos(time*0.19*o.bob + o.phase*1.3)*6*amp;
   const dz = z ? z*k : 0;
@@ -1928,23 +1928,24 @@ function drawFolder(o){
   ctx.strokeStyle = tone(o.col, 0.52 + hot*0.30, (0.95 + hot*0.05)*a);
   ctx.lineWidth = lw*1.15; ctx.stroke();
 
-  // label, upright in screen space
+  // label, upright in screen space, below the deepest point
   const lowest = Math.max(B[0].y, B[1].y, F[0].y, F[1].y);
-  const sz = clamp((small ? 15.2 : 15.2)*P0.s, 1, 130);
+  const sz = clamp((small ? 18.4 : 15.2)*P0.s, 1, 130);
   const labelX = small ? Math.round(P0.x) : P0.x;
-  let yBase = small ? Math.round(P0.y - 18*P0.s) : lowest + 22*P0.s;
+  let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
   const nItems = countOf(o.data.id);
   if (small){
-    o.mobileLabel = null;
-    ctx.textAlign='center'; ctx.textBaseline='top';
-    const lines = wrap(o.data.name, hw*1.75*P0.s, 2);
-    if (lines.length > 1) yBase -= 9*P0.s;
-    setFont(sz, 600, '0.16em');
-    ctx.fillStyle = 'rgba(0,0,0,'+((0.78+hot*0.08)*a).toFixed(3)+')';
-    lines.forEach(ln=>{ ctx.fillText(ln, labelX, yBase); yBase += sz*1.35; });
-    setFont(clamp(12.4*P0.s, 1, 110), 500, '0.18em');
-    ctx.fillStyle = 'rgba(255,255,255,'+((0.92+hot*0.05)*a).toFixed(3)+')';
-    ctx.fillText(nItems + ' ' + (nItems === 1 ? t('item') : t('items')), labelX, yBase + sz*0.18);
+    o.mobileLabel = {
+      x: labelX,
+      y: yBase,
+      w: Math.max(104, hw*3.1*P0.s),
+      nameSize: Math.max(10, sz),
+      countSize: Math.max(8.5, 13.4*P0.s),
+      name: o.data.name,
+      count: nItems + ' ' + (nItems === 1 ? t('item') : t('items')),
+      color: o.col,
+      alpha: a
+    };
     return;
   }
   ctx.textAlign='center'; ctx.textBaseline='top';
@@ -2246,17 +2247,10 @@ function syncFolderLabels(){
       labelEls.set(id, el);
     }
     const m = o.mobileLabel;
-    const smooth = 0.08;
-    if (el._lx == null || Math.abs(m.x - el._lx) > 70 || Math.abs(m.y - el._ly) > 70){
-      el._lx = m.x; el._ly = m.y;
-    } else {
-      el._lx += (m.x - el._lx) * smooth;
-      el._ly += (m.y - el._ly) * smooth;
-    }
     const name = el.firstChild, count = el.lastChild;
     if (name.textContent !== m.name) name.textContent = m.name;
     if (count.textContent !== m.count) count.textContent = m.count;
-    el.style.transform = 'translate3d(' + Math.round(el._lx) + 'px,' + Math.round(el._ly) + 'px,0) translateX(-50%)';
+    el.style.transform = 'translate3d(' + Math.round(m.x) + 'px,' + Math.round(m.y) + 'px,0) translateX(-50%)';
     el.style.width = Math.round(m.w) + 'px';
     el.style.opacity = Math.max(0, Math.min(1, m.alpha)).toFixed(3);
     name.style.fontSize = m.nameSize.toFixed(1) + 'px';
