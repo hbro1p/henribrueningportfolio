@@ -2247,10 +2247,17 @@ function syncFolderLabels(){
       labelEls.set(id, el);
     }
     const m = o.mobileLabel;
+    const smooth = 0.08;
+    if (el._lx == null || Math.abs(m.x - el._lx) > 70 || Math.abs(m.y - el._ly) > 70){
+      el._lx = m.x; el._ly = m.y;
+    } else {
+      el._lx += (m.x - el._lx) * smooth;
+      el._ly += (m.y - el._ly) * smooth;
+    }
     const name = el.firstChild, count = el.lastChild;
     if (name.textContent !== m.name) name.textContent = m.name;
     if (count.textContent !== m.count) count.textContent = m.count;
-    el.style.transform = 'translate3d(' + Math.round(m.x) + 'px,' + Math.round(m.y) + 'px,0) translateX(-50%)';
+    el.style.transform = 'translate3d(' + Math.round(el._lx) + 'px,' + Math.round(el._ly) + 'px,0) translateX(-50%)';
     el.style.width = Math.round(m.w) + 'px';
     el.style.opacity = Math.max(0, Math.min(1, m.alpha)).toFixed(3);
     name.style.fontSize = m.nameSize.toFixed(1) + 'px';
