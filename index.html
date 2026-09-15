@@ -53,10 +53,12 @@ a{color:inherit}
 }
 .folder-label .name{
   display:block;color:#fff;font-weight:500;letter-spacing:.16em;
+  font-size:15.5px;
   text-wrap:balance;
 }
 .folder-label .count{
   display:block;margin-top:5px;font-weight:500;letter-spacing:.18em;
+  font-size:11.5px;
 }
 @media (min-width:860px){#folderLabels{display:none}}
 
@@ -2265,8 +2267,6 @@ function syncFolderLabels(){
     el.style.transform = 'translate3d(' + Math.round(m.x) + 'px,' + Math.round(m.y) + 'px,0) translateX(-50%)';
     el.style.width = Math.round(m.w) + 'px';
     el.style.opacity = Math.max(0, Math.min(1, m.alpha)).toFixed(3);
-    name.style.fontSize = m.nameSize.toFixed(1) + 'px';
-    count.style.fontSize = m.countSize.toFixed(1) + 'px';
     count.style.color = tone(m.color, 0.42, 1);
   }
   for (const [id, el] of labelEls){
