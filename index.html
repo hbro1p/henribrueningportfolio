@@ -1950,9 +1950,9 @@ function drawFolder(o){
     o.mobileLabel = {
       x: stableLabel ? stableLabel.x : labelX,
       y: stableLabel ? stableLabel.y : yBase,
-      w: Math.max(104, hw*3.1*P0.s),
-      nameSize: 15.5,
-      countSize: 11.5,
+      w: Math.min(132, Math.max(86, hw*2.25*P0.s)),
+      nameSize: Math.min(13, Math.max(8.5, 11.4*P0.s)),
+      countSize: Math.min(10, Math.max(7.5, 8.8*P0.s)),
       name: o.data.name,
       count: nItems + ' ' + (nItems === 1 ? t('item') : t('items')),
       color: o.col,
