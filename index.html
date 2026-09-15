@@ -1950,9 +1950,9 @@ function drawFolder(o){
     o.mobileLabel = {
       x: stableLabel ? stableLabel.x : labelX,
       y: stableLabel ? stableLabel.y : yBase,
-      w: Math.min(132, Math.max(86, hw*2.25*P0.s)),
-      nameSize: Math.min(13, Math.max(8.5, 11.4*P0.s)),
-      countSize: Math.min(10, Math.max(7.5, 8.8*P0.s)),
+      w: 112,
+      nameSize: 11,
+      countSize: 8.5,
       name: o.data.name,
       count: nItems + ' ' + (nItems === 1 ? t('item') : t('items')),
       color: o.col,
@@ -2448,12 +2448,23 @@ let levelAt = 0;
 
 /* ---------------- input ---------------- */
 let dragging=false, lx=0, ly=0, moved=false;
+const activePointers = new Map();
 cv.addEventListener('pointerdown', e=>{
   cv.setPointerCapture(e.pointerId);
+  activePointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if (activePointers.size > 1){
+    dragging=false; moved=true; cam.vyaw=0; cam.vpitch=0; cv.classList.remove('drag');
+    return;
+  }
   dragging=true; moved=false; lx=e.clientX; ly=e.clientY;
   cam.vyaw=0; cam.vpitch=0; cam.idle=0; cv.classList.add('drag');
 });
 cv.addEventListener('pointermove', e=>{
+  if (activePointers.has(e.pointerId)) activePointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if (activePointers.size > 1){
+    moved=true; dragging=false; cam.vyaw=0; cam.vpitch=0; cam.idle=0; cv.classList.remove('drag');
+    return;
+  }
   if (dragging){
     const dx=e.clientX-lx, dy=e.clientY-ly;
     if (Math.abs(dx)+Math.abs(dy) > 4) moved=true;
@@ -2467,6 +2478,7 @@ cv.addEventListener('pointermove', e=>{
   }
 });
 function up(e){
+  activePointers.delete(e.pointerId);
   if (!dragging) return;
   dragging=false; cv.classList.remove('drag');
   if (moved) return;
@@ -2480,8 +2492,8 @@ function up(e){
   }
 }
 cv.addEventListener('pointerup', up);
-cv.addEventListener('pointercancel', ()=>{ dragging=false; cv.classList.remove('drag'); });
-cv.addEventListener('pointerleave', ()=>{ if(!dragging){ hover=null; cv.classList.remove('point'); } });
+cv.addEventListener('pointercancel', e=>{ activePointers.delete(e.pointerId); dragging=false; cv.classList.remove('drag'); });
+cv.addEventListener('pointerleave', e=>{ activePointers.delete(e.pointerId); if(!dragging){ hover=null; cv.classList.remove('point'); } });
 cv.addEventListener('wheel', e=>{
   e.preventDefault(); cam.idle = 0;
   cam.zoom = clamp(cam.zoom * (1 + Math.sign(e.deltaY)*0.09), ZOOMIN, 1.9);
