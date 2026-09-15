@@ -1714,6 +1714,7 @@ function layoutRoot(list){
       const rowCount = Math.min(cols, n - row*cols);
       o.p = v3((col - (rowCount-1)/2) * cw, ((Math.ceil(n/cols)-1)/2 - row) * ch, 0);
       o.yaw = (col ? -1 : 1) * 0.035; o.pitch = 0.012; o.roll = (col ? -1 : 1) * 0.002;
+      o.labelAnchor = {x:o.p.x, y:o.p.y};
     });
   }
   // cap how large a folder may get, so a level with only two of them stays calm
@@ -1933,11 +1934,22 @@ function drawFolder(o){
   const sz = clamp((small ? 18.4 : 15.2)*P0.s, 1, 130);
   const labelX = small ? Math.round(P0.x) : P0.x;
   let yBase = small ? Math.round(lowest + 22*P0.s) : lowest + 22*P0.s;
+  let stableLabel = null;
+  if (small && state === 'root' && o.labelAnchor){
+    const anchor = {x:0,y:0,z:0,s:1,ok:false};
+    project(o.labelAnchor.x, o.labelAnchor.y, o.p.z, anchor);
+    if (anchor.ok){
+      stableLabel = {
+        x: Math.round(anchor.x),
+        y: Math.round(anchor.y + 68*P0.s)
+      };
+    }
+  }
   const nItems = countOf(o.data.id);
   if (small){
     o.mobileLabel = {
-      x: labelX,
-      y: yBase,
+      x: stableLabel ? stableLabel.x : labelX,
+      y: stableLabel ? stableLabel.y : yBase,
       w: Math.max(104, hw*3.1*P0.s),
       nameSize: Math.max(10, sz),
       countSize: Math.max(8.5, 13.4*P0.s),
@@ -2247,20 +2259,10 @@ function syncFolderLabels(){
       labelEls.set(id, el);
     }
     const m = o.mobileLabel;
-    if (el._lx == null || Math.abs(m.x - el._lx) > 54 || Math.abs(m.y - el._ly) > 54){
-      el._lx = m.x;
-      el._ly = m.y;
-    } else {
-      const dead = 2.6;
-      const dx = m.x - el._lx;
-      const dy = m.y - el._ly;
-      if (Math.abs(dx) > dead) el._lx += dx * 0.12;
-      if (Math.abs(dy) > dead) el._ly += dy * 0.12;
-    }
     const name = el.firstChild, count = el.lastChild;
     if (name.textContent !== m.name) name.textContent = m.name;
     if (count.textContent !== m.count) count.textContent = m.count;
-    el.style.transform = 'translate3d(' + Math.round(el._lx) + 'px,' + Math.round(el._ly) + 'px,0) translateX(-50%)';
+    el.style.transform = 'translate3d(' + Math.round(m.x) + 'px,' + Math.round(m.y) + 'px,0) translateX(-50%)';
     el.style.width = Math.round(m.w) + 'px';
     el.style.opacity = Math.max(0, Math.min(1, m.alpha)).toFixed(3);
     name.style.fontSize = m.nameSize.toFixed(1) + 'px';
